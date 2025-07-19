@@ -1,5 +1,6 @@
 "use client";
 import { CheckUserLoggedIn } from "@/lib/utils/authentication";
+import { findCartItems } from "@/lib/utils/findData";
 import React, {
   Children,
   createContext,
@@ -35,22 +36,63 @@ const UserContextProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (user != null) {
-      const cart = user.cart || [];
-      cart.forEach(async (elementId) => {
-        let product = await findCartItems(elementId);
-        if (product) {
-          setCartProducts((prevProducts) => [...prevProducts, product]);
-        } else {
-          setCartProducts((prevProducts) => [
-            ...prevProducts,
-            { id: elementId, name: "Unknown Product" },
-          ]);
+    const loadCartProducts = async () => {
+      if (user != null) {
+        setIsCartProductsLoading(true);
+        const cart = user.cart || [];
+        
+        if (cart.length === 0) {
+          console.log("User has empty cart");
+          setCartProducts([]);
+          setIsCartProductsLoading(false);
+          return;
         }
-      });
 
-      setIsCartProductsLoading(false);
-    }
+        let loadedProducts = [];
+
+        try {
+          // Process all cart items sequentially
+          for (const element of cart) {
+            console.log("Processing cart item:", element);
+            const product = await findCartItems(element.id);
+            
+            if (product) {
+              loadedProducts.push({
+                ...product,
+                quantity: element.quantity,
+                selectedSize: element.selectedSize,
+                updatedAt: element.updatedAt,
+                addedAt: element.addedAt,
+              });
+            } else {
+              console.warn(`Product not found for ID: ${element.id}`);
+              loadedProducts.push({ 
+                id: element.id, 
+                name: "Unknown Product",
+                quantity: element.quantity || 1,
+                selectedSize: element.selectedSize || "One Size",
+                price: 0,
+              });
+            }
+          }
+
+          setCartProducts(loadedProducts);
+          console.log("Loaded cart products:", loadedProducts);
+        } catch (error) {
+          console.error("Error loading cart products:", error);
+          setCartProducts([]);
+        } finally {
+          setIsCartProductsLoading(false);
+        }
+      } else {
+        // User is not logged in
+        console.log("User not logged in, clearing cart");
+        setCartProducts([]);
+        setIsCartProductsLoading(false);
+      }
+    };
+
+    loadCartProducts();
   }, [user]);
 
   return (

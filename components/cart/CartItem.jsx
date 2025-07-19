@@ -10,7 +10,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
         <div className="flex-shrink-0">
           <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden">
             <Image
-              src={item.image}
+              src={item.images[0]}
               alt={item.name}
               width={96}
               height={96}
@@ -25,7 +25,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
           <p className="text-gray-600 text-sm mb-2">{item.description}</p>
           <div className="flex items-center space-x-4 text-sm text-gray-500">
             {/* <span>Color: {item.color}</span> */}
-            <span>Size: {item.size}</span>
+            <span>Size: {item.selectedSize}</span>
           </div>
         </div>
 

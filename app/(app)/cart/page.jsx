@@ -26,34 +26,35 @@ const Cart = () => {
   } = useNotification();
 
   // Sample cart items - in a real app, this would come from context or API
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Elegance Tote",
-      price: 299.99,
-      quantity: 1,
-      image: "/api/placeholder/200/200",
-      size: "Large",
-      description: "Premium leather tote bag with gold hardware",
-    },
-    {
-      id: 2,
-      name: "Minimalist Crossbody",
-      price: 189.99,
-      quantity: 2,
-      image: "/api/placeholder/200/200",
-      size: "Medium",
-      description: "Sleek crossbody bag for everyday elegance",
-    },
-  ]);
+  // const [cartItems, setCartItems] = useState([
+  //   {
+  //     id: 1,
+  //     name: "Elegance Tote",
+  //     price: 299.99,
+  //     quantity: 1,
+  //     image: "/api/placeholder/200/200",
+  //     size: "Large",
+  //     description: "Premium leather tote bag with gold hardware",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Minimalist Crossbody",
+  //     price: 189.99,
+  //     quantity: 2,
+  //     image: "/api/placeholder/200/200",
+  //     size: "Medium",
+  //     description: "Sleek crossbody bag for everyday elegance",
+  //   },
+  // ]);
 
   const [promoCode, setPromoCode] = useState("");
   const [isPromoApplied, setIsPromoApplied] = useState(false);
 
+  
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
-    setCartItems(
-      cartItems.map((item) =>
+    setCartProducts(
+      cartProducts.map((item) =>
         item.id === id ? { ...item, quantity: newQuantity } : item
       )
     );
@@ -61,7 +62,7 @@ const Cart = () => {
   };
 
   const removeItem = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+    setCartProducts(cartProducts.filter((item) => item.id !== id));
     showSuccess("Item removed from cart");
   };
 
@@ -74,7 +75,7 @@ const Cart = () => {
     }
   };
 
-  const subtotal = cartItems.reduce(
+  const subtotal = cartProducts.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
@@ -96,7 +97,7 @@ const Cart = () => {
     return <div className="text-center text-gray-600">Loading cart...</div>;
   }
 
-  if (cartItems.length === 0) {
+  if (cartProducts.length === 0) {
     return (
       <EmptyCart
         notification={notification}
@@ -109,12 +110,12 @@ const Cart = () => {
     <div className="min-h-screen bg-gray-50 font-babas-neue">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <CartHeader cartItemsCount={cartItems.length} />
+        <CartHeader cartItemsCount={cartProducts.length} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <CartItemsList
-            cartItems={cartItems}
+            cartProducts={cartProducts}
             updateQuantity={updateQuantity}
             removeItem={removeItem}
           />
