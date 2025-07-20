@@ -1,10 +1,19 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const CartItem = ({ item, updateQuantity, removeItem }) => {
+  const router = useRouter();
+
   return (
-    <div className="border-b border-gray-200 last:border-b-0 p-6">
+    <div
+      className="border-b border-gray-200 last:border-b-0 p-6"
+      onClick={() => {
+        router.push(`/product/${item.id}`);
+      }}
+    >
       <div className="flex items-center space-x-4">
         {/* Product Image */}
         <div className="flex-shrink-0">
@@ -32,14 +41,20 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
         {/* Quantity Controls */}
         <div className="flex items-center space-x-2">
           <button
-            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+            onClick={(e) => {
+              e.stopPropagation();
+              updateQuantity(item.id, item.quantity - 1);
+            }}
             className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
           >
             -
           </button>
           <span className="w-12 text-center">{item.quantity}</span>
           <button
-            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+            onClick={(e) => {
+              e.stopPropagation();
+              updateQuantity(item.id, item.quantity + 1);
+            }}
             className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
           >
             +
@@ -56,7 +71,10 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
 
         {/* Remove Button */}
         <button
-          onClick={() => removeItem(item.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            removeItem(item.id);
+          }}
           className="ml-4 text-red-500 hover:text-red-700 transition-colors"
         >
           <svg
