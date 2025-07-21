@@ -2,7 +2,11 @@
 import React, { useState, use, useContext, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getProductBySlug, getProductById, getRelatedProducts } from "@/data/products";
+import {
+  getProductBySlug,
+  getProductById,
+  getRelatedProducts,
+} from "@/data/products";
 import { notFound } from "next/navigation";
 import { addToCart } from "@/lib/utils/storeData";
 import { UserContext } from "@/context/UserContext";
@@ -20,7 +24,8 @@ const ProductPage = ({ params }) => {
   const [isRelatedProductsLoading, setIsRelatedProductsLoading] =
     useState(false);
 
-  const { user, isLoggedin } = useContext(UserContext);
+  const { user, isLoggedin, cartProducts, setCartProducts } =
+    useContext(UserContext);
   const {
     notification,
     showNotification,
@@ -38,7 +43,7 @@ const ProductPage = ({ params }) => {
       try {
         // First try to get product by slug
         let result = await getProductBySlug(resolvedParams.slug);
-        
+
         if (!result.success) {
           showError(result.error || "Product not found");
         } else {
@@ -99,6 +104,11 @@ const ProductPage = ({ params }) => {
 
       if (result.success) {
         showSuccess(result.message);
+        if (result.updationType === "newProduct") {
+          setCartProducts((prev) => [...prev, result.cartItem]);
+        } else {
+          setCartProducts(result.cartItem);
+        }
       } else {
         showError(result.error || "Failed to add item to cart");
       }

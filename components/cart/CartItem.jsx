@@ -11,7 +11,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
     <div
       className="border-b border-gray-200 last:border-b-0 p-6"
       onClick={() => {
-        router.push(`/product/${item.id}`);
+        router.push(`/product/${item.slug}`);
       }}
     >
       <div className="flex items-center space-x-4">
