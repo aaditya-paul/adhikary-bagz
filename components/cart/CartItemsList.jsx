@@ -3,11 +3,11 @@ import React from "react";
 import Link from "next/link";
 import CartItem from "./CartItem";
 
-const CartItemsList = ({ cartProducts, updateQuantity, removeItem }) => {
+const CartItemsList = ({ CartProductsDetails, updateQuantity, removeItem }) => {
   return (
     <div className="lg:col-span-2">
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-        {cartProducts.map((item) => (
+        {CartProductsDetails.map((item) => (
           <CartItem
             key={item.id}
             item={item}

@@ -17,13 +17,20 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
       <div className="flex items-center space-x-4">
         {/* Product Image */}
         <div className="flex-shrink-0">
-          <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden">
+          <div className="w-24 h-24 rounded-lg overflow-hidden">
             <Image
               src={item.images[0]}
               alt={item.name}
               width={96}
               height={96}
               className="w-full h-full object-cover"
+            />
+            <Image
+              src={item.images[0]}
+              alt={item.name}
+              width={50}
+              height={50}
+              className="object-center relative -top-1/2 -left-1/2 opacity-50 blur-3xl hover:scale-105 transition-transform duration-300 min-w-[600px]"
             />
           </div>
         </div>
