@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useEffect,
 } from "react";
+import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 import { useNotification } from "@/hooks/useNotification";
 import NotificationModal from "@/components/NotificationModal";
@@ -16,6 +17,7 @@ import OrderSummary from "@/components/cart/OrderSummary";
 import { updateCartQuantity, clearCart } from "@/lib/utils/storeData";
 
 const Cart = () => {
+  const router = useRouter();
   const {
     isLoggedin,
     user,
@@ -196,7 +198,9 @@ const Cart = () => {
       return;
     }
     showSuccess("Redirecting to checkout...");
-    // Add checkout logic here
+    setTimeout(() => {
+      router.push("/checkout");
+    }, 1000);
   };
 
   if (isCartProductsLoading) {
