@@ -23,6 +23,8 @@ const Cart = () => {
     setCartProducts,
     isCartProductsLoading,
     setIsCartProductsLoading,
+    setCartProductsDetails,
+    cartProductsDetails,
   } = useContext(UserContext);
   const {
     notification,
@@ -127,6 +129,10 @@ const Cart = () => {
 
   const removeItem = (id) => {
     setCartProducts(cartProducts.filter((item) => item.id !== id));
+    setCartProductsDetails(
+      cartProductsDetails.filter((item) => item.id !== id)
+    );
+
     showSuccess("Item removed from cart");
   };
 
@@ -176,7 +182,7 @@ const Cart = () => {
     }
   };
 
-  const subtotal = cartProducts.reduce(
+  const subtotal = cartProductsDetails.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
@@ -212,7 +218,7 @@ const Cart = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <CartHeader
-          cartItemsCount={cartProducts.length}
+          cartItemsCount={cartProductsDetails.length}
           onClearCart={handleClearCart}
           isClearingCart={isClearingCart}
         />
@@ -220,7 +226,7 @@ const Cart = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <CartItemsList
-            cartProducts={cartProducts}
+            CartProductsDetails={cartProductsDetails}
             updateQuantity={updateQuantity}
             removeItem={removeItem}
             isUpdatingQuantity={isUpdatingQuantity}
