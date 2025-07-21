@@ -14,7 +14,7 @@ const ProductBreadcrumb = ({ product }) => {
           Shop
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-gray-900">{product.name}</span>
+        <span className="text-gray-900">{product?.name}</span>
       </nav>
     </div>
   );

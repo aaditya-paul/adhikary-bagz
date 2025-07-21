@@ -215,7 +215,7 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 font-babas-neue">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Header */}
         <CartHeader
           cartItemsCount={cartProductsDetails.length}
@@ -223,7 +223,7 @@ const Cart = () => {
           isClearingCart={isClearingCart}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Cart Items */}
           <CartItemsList
             CartProductsDetails={cartProductsDetails}
