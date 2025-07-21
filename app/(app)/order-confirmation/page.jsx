@@ -7,6 +7,7 @@ const OrderConfirmationPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [orderNumber, setOrderNumber] = useState(null);
+  const [countdown, setCountdown] = useState(20);
 
   useEffect(() => {
     const order = searchParams.get("order");
@@ -17,6 +18,20 @@ const OrderConfirmationPage = () => {
       router.push("/");
     }
   }, [searchParams, router]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (orderNumber && countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    } else if (countdown === 0) {
+      // Redirect to orders page when countdown reaches 0
+      router.push("/orders");
+    }
+  }, [countdown, orderNumber, router]);
 
   if (!orderNumber) {
     return (
@@ -113,17 +128,37 @@ const OrderConfirmationPage = () => {
             </div>
           </div>
 
+          {/* Countdown Timer */}
+          <div className="bg-yellow-50 rounded-xl p-4 sm:p-6 mb-8">
+            <div className="text-center">
+              <h3 className="text-lg font-medium text-yellow-900 mb-2">
+                Automatic Redirect
+              </h3>
+              <p className="text-yellow-800 mb-4">
+                You will be automatically redirected to your order history in:
+              </p>
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-200 rounded-full mb-4">
+                <span className="text-2xl font-bold text-yellow-900">
+                  {countdown}
+                </span>
+              </div>
+              <p className="text-sm text-yellow-700">
+                Click below to go there now, or wait for automatic redirect
+              </p>
+            </div>
+          </div>
+
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/profile"
-              className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              href="/orders"
+              className="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] font-medium"
             >
               View Order History
             </Link>
             <Link
               href="/"
-              className="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] font-medium"
+              className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
             >
               Continue Shopping
             </Link>
