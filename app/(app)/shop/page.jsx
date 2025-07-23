@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useNotification } from "@/hooks/useNotification";
 import NotificationModal from "@/components/NotificationModal";
 import ProductFilters from "@/components/shop/ProductFilters";
-import ProductCard from "@/components/shop/ProductCard";
+import ProductCard from "@/components/ProductCard";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 
@@ -209,7 +209,16 @@ const ShopPage = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    variant="detailed"
+                    showDescription={true}
+                    showBadges={true}
+                    showStock={true}
+                    showTags={true}
+                    showReviews={true}
+                  />
                 ))}
               </div>
             )}
