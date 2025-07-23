@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-const OrderConfirmationPage = () => {
+const OrderConfirmationContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [orderNumber, setOrderNumber] = useState(null);
@@ -191,6 +191,25 @@ const OrderConfirmationPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Loading component for Suspense fallback
+const OrderConfirmationLoading = () => (
+  <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+      <p className="text-gray-600">Loading order confirmation...</p>
+    </div>
+  </div>
+);
+
+// Main component with Suspense boundary
+const OrderConfirmationPage = () => {
+  return (
+    <Suspense fallback={<OrderConfirmationLoading />}>
+      <OrderConfirmationContent />
+    </Suspense>
   );
 };
 

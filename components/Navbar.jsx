@@ -17,7 +17,7 @@ const Navbar = ({ children }) => {
   ];
   return (
     <>
-      <nav className="font-babas-neue fixed top-0 left-0 right-0 bg-white shadow-sm z-20 grid grid-cols-3 items-center px-20">
+      <nav className="font-babas-neue fixed top-0 left-0 right-0 bg-white shadow-sm z-[100] grid grid-cols-3 items-center px-20">
         <ul className="flex justify-start items-center gap-4 p-4 text-xl">
           {pages.map((route, index) => (
             <li key={index}>
