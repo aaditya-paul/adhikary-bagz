@@ -30,7 +30,7 @@ const ProductCard = ({
         return "bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 group";
       case "simple":
       default:
-        return "rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300";
+        return "rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 group";
     }
   };
 
@@ -40,7 +40,7 @@ const ProductCard = ({
         return "object-cover group-hover:scale-105 transition-transform duration-300";
       case "simple":
       default:
-        return "object-contain hover:scale-105 transition-transform duration-300";
+        return "object-contain group-hover:scale-105 transition-transform duration-300";
     }
   };
 

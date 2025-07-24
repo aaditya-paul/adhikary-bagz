@@ -97,7 +97,14 @@ const CheckoutPage = () => {
       router.push("/cart");
       return;
     }
-  }, [isLoggedin, cartProducts, isCartProductsLoading, isProcessing, router, showWarning]);
+  }, [
+    isLoggedin,
+    cartProducts,
+    isCartProductsLoading,
+    isProcessing,
+    router,
+    showWarning,
+  ]);
 
   // Initialize user data
   useEffect(() => {
@@ -194,7 +201,7 @@ const CheckoutPage = () => {
     try {
       // Simulate order processing
       const timeStamp = Date.now();
-      const id = `ORDER-${timeStamp}`;
+      const id = `${timeStamp}`;
 
       // Set the order document with the generated id for easier reference
       await setDoc(doc(db, "Orders", id), {
@@ -228,7 +235,6 @@ const CheckoutPage = () => {
         setCartProducts([]);
         setCartProductsDetails([]);
       }, 100);
-
     } catch (error) {
       console.error("Order processing error:", error);
       showError("Failed to process order. Please try again.");

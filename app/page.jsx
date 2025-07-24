@@ -8,21 +8,26 @@ import BrandProgress from "@/components/BrandProgress";
 import BrandVision from "@/components/BrandVision";
 // import AdminPanel from "@/components/AdminPanel";
 import Image from "next/image";
+import ClientLayout from "@/components/ClientLayout";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
+    // <ClientLayout>
     <>
-      <HeroSection />
-      <BrandShowcase />
-      <LuxuryStatement />
-      <FeaturedProducts />
-      <PopularProducts />
-      {/* <BrandProgress /> */}
-      <Categories />
-      <BrandVision />
-      
-      {/* Temporary Admin Panel for Product Management */}
-      {/* <AdminPanel /> */}
+      <Navbar>
+        <HeroSection />
+        <BrandShowcase />
+        <LuxuryStatement />
+        <FeaturedProducts />
+        <PopularProducts />
+        {/* <BrandProgress /> */}
+        <Categories />
+        <BrandVision />
+      </Navbar>
+      <Footer />
     </>
+    // </ClientLayout>
   );
 }

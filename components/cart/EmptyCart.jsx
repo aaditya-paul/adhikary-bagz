@@ -29,7 +29,7 @@ const EmptyCart = ({ notification, hideNotification }) => {
               Discover our exquisite collection of luxury handbags
             </p>
             <Link
-              href="/products"
+              href="/shop"
               className="inline-block bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
             >
               Shop Now
