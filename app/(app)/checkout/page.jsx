@@ -44,6 +44,7 @@ const CheckoutPage = () => {
   // Checkout state
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
   const [sameAsShipping, setSameAsShipping] = useState(true);
 
   // Form states
@@ -82,7 +83,7 @@ const CheckoutPage = () => {
   const [promoCode, setPromoCode] = useState("");
   const [isPromoApplied, setIsPromoApplied] = useState(false);
 
-  // Redirect if not logged in or cart is empty
+  // Redirect if not logged in or cart is empty (but not during processing)
   useEffect(() => {
     if (!isLoggedin) {
       showWarning("Please sign in to continue with checkout");
@@ -90,12 +91,13 @@ const CheckoutPage = () => {
       return;
     }
 
-    if (!isCartProductsLoading && cartProducts.length === 0) {
+    // Only redirect for empty cart if we're not currently processing an order
+    if (!isCartProductsLoading && cartProducts.length === 0 && !isProcessing) {
       showWarning("Your cart is empty");
       router.push("/cart");
       return;
     }
-  }, [isLoggedin, cartProducts, isCartProductsLoading, router, showWarning]);
+  }, [isLoggedin, cartProducts, isCartProductsLoading, isProcessing, router, showWarning]);
 
   // Initialize user data
   useEffect(() => {
@@ -204,15 +206,7 @@ const CheckoutPage = () => {
         shippingData,
       });
 
-      // console.log("Order placed successfully:", id, "with data:", {
-      //   id,
-      //   userId: user.uid,
-      //   items: cartProductsDetails,
-      //   total,
-      //   createdAt: timeStamp,
-      //   shippingData,
-      // });
-
+      // Update user document
       await updateDoc(doc(db, "users", user.uid), {
         orders: arrayUnion({
           id,
@@ -222,26 +216,35 @@ const CheckoutPage = () => {
         cardDetails: paymentData.saveCard ? paymentData : null,
       });
 
-      // Clear cart after successful order
-      setCartProducts([]);
-      setCartProductsDetails([]);
+      // Show success message
+      showSuccess("Order placed successfully!");
 
-      // Redirect to order confirmation
+      // Set navigation state and redirect
+      setIsNavigating(true);
       router.push(`/order-confirmation?order=${id}`);
+
+      // Clear cart after a small delay to allow navigation
+      setTimeout(() => {
+        setCartProducts([]);
+        setCartProductsDetails([]);
+      }, 100);
+
     } catch (error) {
       console.error("Order processing error:", error);
       showError("Failed to process order. Please try again.");
-    } finally {
       setIsProcessing(false);
     }
+    // Note: Don't set isProcessing to false here in success case to prevent UI flicker
   };
 
-  if (isCartProductsLoading) {
+  if (isCartProductsLoading || isNavigating) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading checkout...</p>
+          <p className="text-gray-600">
+            {isNavigating ? "Processing order..." : "Loading checkout..."}
+          </p>
         </div>
       </div>
     );
