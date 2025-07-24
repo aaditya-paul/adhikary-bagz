@@ -10,6 +10,15 @@ import ShippingForm from "@/components/checkout/ShippingForm";
 import PaymentForm from "@/components/checkout/PaymentForm";
 import OrderSummary from "@/components/checkout/OrderSummary";
 import ProgressSteps from "@/components/checkout/ProgressSteps";
+import {
+  addDoc,
+  doc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -182,18 +191,43 @@ const CheckoutPage = () => {
 
     try {
       // Simulate order processing
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      const timeStamp = Date.now();
+      const id = `ORDER-${timeStamp}`;
+
+      // Set the order document with the generated id for easier reference
+      await setDoc(doc(db, "Orders", id), {
+        id,
+        userId: user.uid,
+        items: cartProductsDetails,
+        total,
+        createdAt: timeStamp,
+        shippingData,
+      });
+
+      // console.log("Order placed successfully:", id, "with data:", {
+      //   id,
+      //   userId: user.uid,
+      //   items: cartProductsDetails,
+      //   total,
+      //   createdAt: timeStamp,
+      //   shippingData,
+      // });
+
+      await updateDoc(doc(db, "users", user.uid), {
+        orders: arrayUnion({
+          id,
+          createdAt: timeStamp,
+        }),
+        cart: [],
+        cardDetails: paymentData.saveCard ? paymentData : null,
+      });
 
       // Clear cart after successful order
       setCartProducts([]);
       setCartProductsDetails([]);
 
-      showSuccess("Order placed successfully!");
-
       // Redirect to order confirmation
-      setTimeout(() => {
-        router.push("/order-confirmation?order=ORDER-" + Date.now());
-      }, 2000);
+      router.push(`/order-confirmation?order=${id}`);
     } catch (error) {
       console.error("Order processing error:", error);
       showError("Failed to process order. Please try again.");

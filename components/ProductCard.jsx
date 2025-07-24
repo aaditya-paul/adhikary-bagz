@@ -65,7 +65,7 @@ const ProductCard = ({
               alt={product.name || "Product"}
               width={600}
               height={600}
-              className="object-center relative -top-1/2 -left-1/2 opacity-50 blur-3xl hover:scale-105 transition-transform duration-300 min-w-[600px]"
+              className="object-center relative -top-1/2 -left-1/2 opacity-20 blur-3xl hover:scale-105 transition-transform duration-300 min-w-[600px]"
             />
           )}
 

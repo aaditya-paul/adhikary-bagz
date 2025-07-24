@@ -110,7 +110,15 @@ const ProductPage = ({ params }) => {
 
       if (result.success) {
         // Refresh cart data from Firestore to ensure UI is in sync
-        await refreshCart();
+        // await refreshCart();
+        if (result.updationType === "quantity") {
+          setCartProducts(result.cart);
+          showSuccess("Product quantity updated in cart");
+        } else {
+          setCartProducts((prev) => [...prev, result.cartItem]);
+          // Optionally refresh cart products details if needed
+          showSuccess("Product added to cart");
+        }
         showSuccess(result.message);
       } else {
         showError(result.error || "Failed to add item to cart");

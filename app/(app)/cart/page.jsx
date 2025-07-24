@@ -197,10 +197,8 @@ const Cart = () => {
       showWarning("Please sign in to proceed with checkout");
       return;
     }
-    showSuccess("Redirecting to checkout...");
-    setTimeout(() => {
-      router.push("/checkout");
-    }, 1000);
+    // showSuccess("Redirecting to checkout...");
+    router.push("/checkout");
   };
 
   if (isCartProductsLoading) {

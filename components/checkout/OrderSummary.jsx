@@ -54,7 +54,7 @@ const OrderSummary = ({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Promo Code
         </label>
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex justify-center items-center gap-2">
           <input
             type="text"
             value={promoCode}

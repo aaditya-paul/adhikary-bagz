@@ -184,14 +184,18 @@ const PaymentForm = ({ data, setData, onPrev, onPlaceOrder, isProcessing }) => {
         <button
           onClick={onPrev}
           disabled={isProcessing}
-          className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-300 font-medium text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`${
+            isProcessing && "cursor-none"
+          } w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-300 font-medium text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           Back to Billing
         </button>
         <button
           onClick={onPlaceOrder}
           disabled={isProcessing}
-          className="w-full sm:flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] font-medium text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className={`${
+            isProcessing && "cursor-none"
+          } w-full sm:flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] font-medium text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
         >
           {isProcessing ? (
             <div className="flex items-center justify-center">
