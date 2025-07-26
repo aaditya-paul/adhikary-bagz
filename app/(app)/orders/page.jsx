@@ -40,7 +40,7 @@ const OrdersPage = () => {
 
           // First, get the user's order IDs array
           const userOrdersResult = await getUserOrders(user.uid);
-          
+
           if (!userOrdersResult.success) {
             showError(userOrdersResult.error || "Failed to fetch orders");
             setOrders([]);
@@ -50,20 +50,25 @@ const OrdersPage = () => {
           console.log("User order IDs:", userOrdersResult.orders);
 
           // If user has no orders, set empty array
-          if (!userOrdersResult.orders || userOrdersResult.orders.length === 0) {
+          if (
+            !userOrdersResult.orders ||
+            userOrdersResult.orders.length === 0
+          ) {
             setOrders([]);
             return;
           }
 
           // Extract order IDs from the user's orders array
-          const orderIds = userOrdersResult.orders.map(order => order.id);
+          const orderIds = userOrdersResult.orders.map((order) => order.id);
           console.log("Extracted order IDs:", orderIds);
 
           // Fetch detailed order information for each order ID
           const orderDetailsResult = await getMultipleOrderDetails(orderIds);
-          
+
           if (!orderDetailsResult.success) {
-            showError(orderDetailsResult.error || "Failed to fetch order details");
+            showError(
+              orderDetailsResult.error || "Failed to fetch order details"
+            );
             setOrders([]);
             return;
           }
@@ -79,10 +84,14 @@ const OrdersPage = () => {
 
           setOrders(sortedOrders);
 
-          if (orderDetailsResult.errors && orderDetailsResult.errors.length > 0) {
-            showWarning(`Some orders could not be loaded: ${orderDetailsResult.errors.length} failed`);
+          if (
+            orderDetailsResult.errors &&
+            orderDetailsResult.errors.length > 0
+          ) {
+            showWarning(
+              `Some orders could not be loaded: ${orderDetailsResult.errors.length} failed`
+            );
           }
-
         } catch (error) {
           console.error("Error fetching orders:", error);
           showError("An error occurred while loading orders");
@@ -98,31 +107,31 @@ const OrdersPage = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'delivered':
-        return 'text-green-600 bg-green-100';
-      case 'shipped':
-        return 'text-blue-600 bg-blue-100';
-      case 'processing':
-        return 'text-yellow-600 bg-yellow-100';
-      case 'cancelled':
-        return 'text-red-600 bg-red-100';
+      case "delivered":
+        return "text-green-600 bg-green-100";
+      case "shipped":
+        return "text-blue-600 bg-blue-100";
+      case "processing":
+        return "text-yellow-600 bg-yellow-100";
+      case "cancelled":
+        return "text-red-600 bg-red-100";
       default:
-        return 'text-gray-600 bg-gray-100';
+        return "text-gray-600 bg-gray-100";
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'delivered':
-        return 'Delivered';
-      case 'shipped':
-        return 'Shipped';
-      case 'processing':
-        return 'Processing';
-      case 'cancelled':
-        return 'Cancelled';
+      case "delivered":
+        return "Delivered";
+      case "shipped":
+        return "Shipped";
+      case "processing":
+        return "Processing";
+      case "cancelled":
+        return "Cancelled";
       default:
-        return 'Unknown';
+        return "Unknown";
     }
   };
 
@@ -197,7 +206,8 @@ const OrdersPage = () => {
               No Orders Yet
             </h2>
             <p className="text-gray-600 mb-6">
-              You haven't placed any orders. Start shopping to see your order history here.
+              You haven't placed any orders. Start shopping to see your order
+              history here.
             </p>
             <Link
               href="/"
@@ -209,7 +219,10 @@ const OrdersPage = () => {
         ) : (
           <div className="space-y-6">
             {orders.map((order) => (
-              <div key={order.id} className="bg-white rounded-xl shadow-lg overflow-hidden">
+              <div
+                key={order.id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden"
+              >
                 {/* Order Header */}
                 <div className="bg-gray-50 px-4 sm:px-6 py-4 border-b border-gray-200">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
@@ -218,7 +231,10 @@ const OrdersPage = () => {
                         Order #{order.orderNumber || order.id}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        Placed on {new Date(order.createdAt || order.date || Date.now()).toLocaleDateString()}
+                        Placed on{" "}
+                        {new Date(
+                          order.createdAt || order.date || Date.now()
+                        ).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
@@ -239,32 +255,45 @@ const OrdersPage = () => {
                 {/* Order Items */}
                 <div className="p-4 sm:p-6">
                   <div className="space-y-4">
-                    {(order.cartItems || order.items || []).map((item, index) => (
-                      <div key={item.id || index} className="flex items-center space-x-4">
-                        <div className="flex-shrink-0">
-                          <div className="w-16 h-16 rounded-lg overflow-hidden">
-                            <Image
-                              src={item.primaryImage || item.image || "/assests/bags/bag_black.png"}
-                              alt={item.name || "Product"}
-                              width={64}
-                              height={64}
-                              className="w-full h-full object-cover"
-                            />
+                    {(order.cartItems || order.items || []).map(
+                      (item, index) => (
+                        <div
+                          key={item.id || index}
+                          className="flex items-center space-x-4"
+                        >
+                          <div className="flex-shrink-0">
+                            <div className="w-16 h-16 rounded-lg overflow-hidden">
+                              <Image
+                                src={
+                                  item.primaryImage ||
+                                  item.image ||
+                                  "/assests/bags/bag_black.png"
+                                }
+                                alt={item.name || "Product"}
+                                width={64}
+                                height={64}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-medium text-gray-900">
+                              {item.name || "Unknown Product"}
+                            </h4>
+                            <p className="text-sm text-gray-500">
+                              Size: {item.selectedSize || "One Size"} • Qty:{" "}
+                              {item.quantity || 1}
+                            </p>
+                          </div>
+                          <div className="text-sm font-medium text-gray-900">
+                            $
+                            {((item.price || 0) * (item.quantity || 1)).toFixed(
+                              2
+                            )}
                           </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900">
-                            {item.name || "Unknown Product"}
-                          </h4>
-                          <p className="text-sm text-gray-500">
-                            Size: {item.selectedSize || "One Size"} • Qty: {item.quantity || 1}
-                          </p>
-                        </div>
-                        <div className="text-sm font-medium text-gray-900">
-                          ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    )}
                   </div>
 
                   {/* Order Actions */}
@@ -273,17 +302,19 @@ const OrdersPage = () => {
                       <button className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
                         View Details
                       </button>
-                      {(order.status === 'delivered' || order.status === 'completed') && (
+                      {(order.status === "delivered" ||
+                        order.status === "completed") && (
                         <button className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
                           Reorder
                         </button>
                       )}
-                      {(order.status === 'shipped' || order.status === 'processing') && (
+                      {(order.status === "shipped" ||
+                        order.status === "processing") && (
                         <button className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
                           Track Order
                         </button>
                       )}
-                      {order.status === 'processing' && (
+                      {order.status === "processing" && (
                         <button className="w-full sm:w-auto px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium">
                           Cancel Order
                         </button>

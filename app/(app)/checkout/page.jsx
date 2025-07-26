@@ -220,7 +220,9 @@ const CheckoutPage = () => {
         paymentData: {
           // Don't store sensitive payment info, just metadata
           paymentMethod: paymentData.paymentMethod,
-          last4: paymentData.cardNumber ? paymentData.cardNumber.slice(-4) : null,
+          last4: paymentData.cardNumber
+            ? paymentData.cardNumber.slice(-4)
+            : null,
         },
       });
 
