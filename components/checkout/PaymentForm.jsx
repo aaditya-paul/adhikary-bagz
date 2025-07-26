@@ -1,7 +1,23 @@
 "use client";
-import React from "react";
+import { UserContext } from "@/context/UserContext";
+import React, { useContext, useEffect, useState } from "react";
 
 const PaymentForm = ({ data, setData, onPrev, onPlaceOrder, isProcessing }) => {
+  const { user } = useContext(UserContext);
+
+  useEffect(() => {
+    if (user?.cardDetails) {
+      setData((prev) => ({
+        ...prev,
+        cardNumber: user.cardDetails.cardNumber || "",
+        cardName: user.cardDetails.cardName || "",
+        expiryDate: user.cardDetails.expiryDate || "",
+        cvv: user.cardDetails.cvv || "",
+        saveCard: true, // Default to false for new orders
+      }));
+    }
+  }, [user?.cardDetails]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 

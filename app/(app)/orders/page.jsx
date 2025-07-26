@@ -6,6 +6,7 @@ import { useNotification } from "@/hooks/useNotification";
 import NotificationModal from "@/components/NotificationModal";
 import Link from "next/link";
 import Image from "next/image";
+import { getUserOrders, getMultipleOrderDetails } from "@/lib/utils/findData";
 
 const OrdersPage = () => {
   const router = useRouter();
@@ -22,84 +23,6 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
 
-  // Mock orders data - replace with actual API call
-  const mockOrders = [
-    {
-      id: "ORDER-1737484800000",
-      orderNumber: "ORDER-1737484800000",
-      date: "2025-01-21",
-      status: "delivered",
-      total: 324.99,
-      items: [
-        {
-          id: 1,
-          name: "Classic Black Leather Handbag",
-          price: 299.00,
-          quantity: 1,
-          image: "/assests/bags/bag_black.png",
-          selectedSize: "Medium"
-        },
-        {
-          id: 2,
-          name: "Vivienne Westwood London",
-          price: 249.00,
-          quantity: 1,
-          image: "/assests/bags/bag_brown.png",
-          selectedSize: "Large"
-        }
-      ],
-      shipping: {
-        method: "Standard Shipping",
-        cost: 0,
-        address: "123 Main St, New York, NY 10001"
-      }
-    },
-    {
-      id: "ORDER-1737398400000",
-      orderNumber: "ORDER-1737398400000", 
-      date: "2025-01-20",
-      status: "shipped",
-      total: 264.99,
-      items: [
-        {
-          id: 3,
-          name: "Elegant Evening Clutch",
-          price: 249.00,
-          quantity: 1,
-          image: "/assests/bags/bag_brown.png",
-          selectedSize: "One Size"
-        }
-      ],
-      shipping: {
-        method: "Express Shipping",
-        cost: 15.99,
-        address: "123 Main St, New York, NY 10001"
-      }
-    },
-    {
-      id: "ORDER-1737312000000",
-      orderNumber: "ORDER-1737312000000",
-      date: "2025-01-19",
-      status: "processing",
-      total: 199.99,
-      items: [
-        {
-          id: 4,
-          name: "Casual Canvas Tote",
-          price: 184.00,
-          quantity: 1,
-          image: "/assests/bags/bag_black.png",
-          selectedSize: "Large"
-        }
-      ],
-      shipping: {
-        method: "Standard Shipping",
-        cost: 15.99,
-        address: "123 Main St, New York, NY 10001"
-      }
-    }
-  ];
-
   // Redirect if not logged in
   useEffect(() => {
     if (!isLoading && !isLoggedin) {
@@ -107,16 +30,71 @@ const OrdersPage = () => {
     }
   }, [isLoggedin, isLoading, router]);
 
-  // Load orders
+  // Load orders from Firestore
   useEffect(() => {
-    if (isLoggedin && user) {
-      // Simulate API call
-      setTimeout(() => {
-        setOrders(mockOrders);
-        setIsLoadingOrders(false);
-      }, 1000);
-    }
-  }, [isLoggedin, user]);
+    const fetchUserOrders = async () => {
+      if (isLoggedin && user && user.uid) {
+        try {
+          setIsLoadingOrders(true);
+          console.log("Fetching orders for user:", user.uid);
+
+          // First, get the user's order IDs array
+          const userOrdersResult = await getUserOrders(user.uid);
+          
+          if (!userOrdersResult.success) {
+            showError(userOrdersResult.error || "Failed to fetch orders");
+            setOrders([]);
+            return;
+          }
+
+          console.log("User order IDs:", userOrdersResult.orders);
+
+          // If user has no orders, set empty array
+          if (!userOrdersResult.orders || userOrdersResult.orders.length === 0) {
+            setOrders([]);
+            return;
+          }
+
+          // Extract order IDs from the user's orders array
+          const orderIds = userOrdersResult.orders.map(order => order.id);
+          console.log("Extracted order IDs:", orderIds);
+
+          // Fetch detailed order information for each order ID
+          const orderDetailsResult = await getMultipleOrderDetails(orderIds);
+          
+          if (!orderDetailsResult.success) {
+            showError(orderDetailsResult.error || "Failed to fetch order details");
+            setOrders([]);
+            return;
+          }
+
+          console.log("Fetched order details:", orderDetailsResult.orders);
+
+          // Sort orders by creation date (newest first)
+          const sortedOrders = orderDetailsResult.orders.sort((a, b) => {
+            const dateA = new Date(a.createdAt || a.date || 0);
+            const dateB = new Date(b.createdAt || b.date || 0);
+            return dateB - dateA;
+          });
+
+          setOrders(sortedOrders);
+
+          if (orderDetailsResult.errors && orderDetailsResult.errors.length > 0) {
+            showWarning(`Some orders could not be loaded: ${orderDetailsResult.errors.length} failed`);
+          }
+
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+          showError("An error occurred while loading orders");
+          setOrders([]);
+        } finally {
+          setIsLoadingOrders(false);
+        }
+      }
+    };
+
+    fetchUserOrders();
+  }, [isLoggedin, user, showError, showWarning]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -237,22 +215,22 @@ const OrdersPage = () => {
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
                     <div>
                       <h3 className="text-lg font-medium text-gray-900">
-                        Order #{order.orderNumber}
+                        Order #{order.orderNumber || order.id}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        Placed on {new Date(order.date).toLocaleDateString()}
+                        Placed on {new Date(order.createdAt || order.date || Date.now()).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                       <span
                         className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                          order.status
+                          order.status || "processing"
                         )}`}
                       >
-                        {getStatusText(order.status)}
+                        {getStatusText(order.status || "processing")}
                       </span>
                       <span className="text-lg font-medium text-gray-900">
-                        ${order.total.toFixed(2)}
+                        ${(order.totalPrice || order.total || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -261,13 +239,13 @@ const OrdersPage = () => {
                 {/* Order Items */}
                 <div className="p-4 sm:p-6">
                   <div className="space-y-4">
-                    {order.items.map((item) => (
-                      <div key={item.id} className="flex items-center space-x-4">
+                    {(order.cartItems || order.items || []).map((item, index) => (
+                      <div key={item.id || index} className="flex items-center space-x-4">
                         <div className="flex-shrink-0">
                           <div className="w-16 h-16 rounded-lg overflow-hidden">
                             <Image
-                              src={item.image}
-                              alt={item.name}
+                              src={item.primaryImage || item.image || "/assests/bags/bag_black.png"}
+                              alt={item.name || "Product"}
                               width={64}
                               height={64}
                               className="w-full h-full object-cover"
@@ -276,14 +254,14 @@ const OrdersPage = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-medium text-gray-900">
-                            {item.name}
+                            {item.name || "Unknown Product"}
                           </h4>
                           <p className="text-sm text-gray-500">
-                            Size: {item.selectedSize} • Qty: {item.quantity}
+                            Size: {item.selectedSize || "One Size"} • Qty: {item.quantity || 1}
                           </p>
                         </div>
                         <div className="text-sm font-medium text-gray-900">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
                         </div>
                       </div>
                     ))}
@@ -295,7 +273,7 @@ const OrdersPage = () => {
                       <button className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
                         View Details
                       </button>
-                      {order.status === 'delivered' && (
+                      {(order.status === 'delivered' || order.status === 'completed') && (
                         <button className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
                           Reorder
                         </button>
@@ -303,6 +281,11 @@ const OrdersPage = () => {
                       {(order.status === 'shipped' || order.status === 'processing') && (
                         <button className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
                           Track Order
+                        </button>
+                      )}
+                      {order.status === 'processing' && (
+                        <button className="w-full sm:w-auto px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium">
+                          Cancel Order
                         </button>
                       )}
                     </div>

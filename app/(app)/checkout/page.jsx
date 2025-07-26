@@ -207,10 +207,21 @@ const CheckoutPage = () => {
       await setDoc(doc(db, "Orders", id), {
         id,
         userId: user.uid,
-        items: cartProductsDetails,
-        total,
+        cartItems: cartProductsDetails,
+        totalPrice: total,
+        subtotal,
+        shipping,
+        tax,
+        discount,
+        status: "processing",
         createdAt: timeStamp,
         shippingData,
+        billingData,
+        paymentData: {
+          // Don't store sensitive payment info, just metadata
+          paymentMethod: paymentData.paymentMethod,
+          last4: paymentData.cardNumber ? paymentData.cardNumber.slice(-4) : null,
+        },
       });
 
       // Update user document
