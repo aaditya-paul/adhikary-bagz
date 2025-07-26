@@ -81,7 +81,9 @@ const ProfilePage = () => {
         setUser(null);
         setIsLoggedin(false);
         showSuccess("Signed out successfully");
-        router.push("/");
+        setTimeout(() => {
+          router.push("/");
+        }, 5000);
       } else {
         showError(result.error || "Failed to sign out");
       }

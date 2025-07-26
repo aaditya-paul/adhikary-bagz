@@ -8,10 +8,9 @@ export const metadata = {
 
 export default function AuthLayout({ children }) {
   return (
-    // TODO: Fix the layout (div or section) to ensure proper structure
-    <div>
+    <section>
       {/* Auth pages have no navbar or footer for clean authentication experience */}
       {children}
-    </div>
+    </section>
   );
 }

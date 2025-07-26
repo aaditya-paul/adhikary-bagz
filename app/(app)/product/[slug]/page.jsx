@@ -8,6 +8,7 @@ import {
 import { notFound } from "next/navigation";
 import { addToCart } from "@/lib/utils/storeData";
 import { UserContext } from "@/context/UserContext";
+import { useRouter } from "next/navigation";
 import { useNotification } from "@/hooks/useNotification";
 import NotificationModal from "@/components/NotificationModal";
 import {
@@ -20,6 +21,7 @@ import {
 } from "@/components/product";
 
 const ProductPage = ({ params }) => {
+  const router = useRouter();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("One Size");
@@ -93,7 +95,8 @@ const ProductPage = ({ params }) => {
 
   const handleAddToCart = async () => {
     if (!isLoggedin || !user) {
-      showWarning("Please sign in to add items to cart");
+      // showWarning("Please sign in to add items to cart");
+      router.push("/signin");
       return;
     }
 

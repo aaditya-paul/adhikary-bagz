@@ -2,7 +2,7 @@
 import React, { useContext, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { SignInWithEmail } from "@/lib/utils/authentication";
+import { SignInWithEmail, signUpAndSignInWithGoogle } from "@/lib/utils/authentication";
 import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 import { useNotification } from "@/hooks/useNotification";
@@ -27,6 +27,7 @@ const SignInPage = () => {
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -101,6 +102,34 @@ const SignInPage = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+
+    try {
+      const result = await signUpAndSignInWithGoogle();
+      console.log("Google sign in result:", result);
+
+      if (result.user) {
+        console.log("Google sign in successful:", result.user);
+        setIsLoggedin(true);
+        setUser(result.user);
+        showSuccess(result.message, 3000);
+
+        // Redirect to home page after showing success notification
+        setTimeout(() => {
+          router.push("/");
+        }, 3000);
+      } else {
+        showError(result.message || "Google sign in failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Google sign in error:", error);
+      showError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center py-12 px-4 font-babas-neue">
       <div className="max-w-md w-full">
@@ -155,17 +184,60 @@ const SignInPage = () => {
               >
                 Password
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-300 ${
-                  errors.password ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="Enter your password"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-300 ${
+                    errors.password ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {showPassword ? (
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">{errors.password}</p>
               )}
@@ -229,7 +301,9 @@ const SignInPage = () => {
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300"
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
@@ -249,7 +323,7 @@ const SignInPage = () => {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Google
+                {isLoading ? "..." : "Google"}
               </button>
               <button
                 type="button"
@@ -272,7 +346,7 @@ const SignInPage = () => {
                 Don't have an account?{" "}
                 <Link
                   href="/signup"
-                  className="text-gray-900 hover:text-gray-700 transition-colors font-medium"
+                  className="text-gray-900 hover:text-gray-700 hover:underline transition-colors font-medium"
                 >
                   Sign up here
                 </Link>

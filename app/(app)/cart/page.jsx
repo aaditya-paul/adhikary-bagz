@@ -202,8 +202,11 @@ const Cart = () => {
   };
 
   if (isCartProductsLoading) {
-    //TODO later a sekeleton will be added
-    return <div className="text-center text-gray-600">Loading cart...</div>;
+    return (
+      <div className="text-center text-gray-600 font-babas-neue">
+        Loading cart...
+      </div>
+    );
   }
 
   if (cartProducts.length === 0) {
