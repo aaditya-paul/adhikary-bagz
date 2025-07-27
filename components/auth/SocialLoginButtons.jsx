@@ -27,8 +27,8 @@ const FacebookIcon = memo(() => (
   </svg>
 ));
 
-GoogleIcon.displayName = 'GoogleIcon';
-FacebookIcon.displayName = 'FacebookIcon';
+GoogleIcon.displayName = "GoogleIcon";
+FacebookIcon.displayName = "FacebookIcon";
 
 const SocialLoginButtons = memo(({ onGoogle, onFacebook, isLoading }) => (
   <div className="grid grid-cols-2 gap-3">
@@ -55,6 +55,6 @@ const SocialLoginButtons = memo(({ onGoogle, onFacebook, isLoading }) => (
   </div>
 ));
 
-SocialLoginButtons.displayName = 'SocialLoginButtons';
+SocialLoginButtons.displayName = "SocialLoginButtons";
 
 export default SocialLoginButtons;

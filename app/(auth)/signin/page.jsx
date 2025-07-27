@@ -6,7 +6,10 @@ import { UserContext } from "@/context/UserContext";
 import { useNotification } from "@/hooks/useNotification";
 import useFormValidation from "@/hooks/useFormValidation";
 import { validateSignInForm } from "@/lib/utils/validation";
-import { SignInWithEmail, signUpAndSignInWithGoogle } from "@/lib/utils/authentication";
+import {
+  SignInWithEmail,
+  signUpAndSignInWithGoogle,
+} from "@/lib/utils/authentication";
 import {
   InputField,
   PasswordField,
@@ -25,20 +28,30 @@ const INITIAL_FORM_DATA = {
 };
 
 const ERROR_MESSAGES = {
-  "auth/user-not-found": "No account found with this email address. Please check your email or sign up.",
-  "auth/wrong-password": "Incorrect password. Please try again or reset your password.",
+  "auth/user-not-found":
+    "No account found with this email address. Please check your email or sign up.",
+  "auth/wrong-password":
+    "Incorrect password. Please try again or reset your password.",
   "auth/invalid-email": "Please enter a valid email address.",
-  "auth/user-disabled": "This account has been disabled. Please contact support.",
+  "auth/user-disabled":
+    "This account has been disabled. Please contact support.",
   "auth/too-many-requests": "Too many failed attempts. Please try again later.",
-  "auth/network-request-failed": "Network error. Please check your connection and try again.",
+  "auth/network-request-failed":
+    "Network error. Please check your connection and try again.",
   default: "An error occurred during sign in. Please try again.",
 };
 
 const SignInPage = () => {
   const router = useRouter();
   const { setIsLoggedin, setUser } = useContext(UserContext);
-  const { notification, hideNotification, showSuccess, showError, showWarning } = useNotification();
-  
+  const {
+    notification,
+    hideNotification,
+    showSuccess,
+    showError,
+    showWarning,
+  } = useNotification();
+
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -49,50 +62,66 @@ const SignInPage = () => {
 
   // Helper function to get error message
   const getErrorMessage = useCallback((error) => {
-    return ERROR_MESSAGES[error.code] || error.message || ERROR_MESSAGES.default;
+    return (
+      ERROR_MESSAGES[error.code] || error.message || ERROR_MESSAGES.default
+    );
   }, []);
 
   // Handle email signin
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      showError("Please fix the form errors before submitting.");
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    try {
-      const result = await SignInWithEmail(formData.email, formData.password);
-      
-      if (result.user && !result.emailVerified) {
-        showWarning(result.message, 8000);
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+
+      if (!validateForm()) {
+        showError("Please fix the form errors before submitting.");
         return;
       }
-      
-      if (result.user && result.emailVerified) {
-        setIsLoggedin(true);
-        setUser(result.user);
-        showSuccess(result.message, 3000);
-        setTimeout(() => router.push("/"), 3000);
-      } else {
-        showError(result.message || "Sign in failed. Please try again.");
+
+      setIsLoading(true);
+
+      try {
+        const result = await SignInWithEmail(formData.email, formData.password);
+
+        if (result.user && !result.emailVerified) {
+          showWarning(result.message, 8000);
+          return;
+        }
+
+        if (result.user && result.emailVerified) {
+          setIsLoggedin(true);
+          setUser(result.user);
+          showSuccess(result.message, 3000);
+          setTimeout(() => router.push("/"), 3000);
+        } else {
+          showError(result.message || "Sign in failed. Please try again.");
+        }
+      } catch (error) {
+        showError(getErrorMessage(error), 7000);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      showError(getErrorMessage(error), 7000);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [formData.email, formData.password, validateForm, showError, showWarning, showSuccess, setIsLoggedin, setUser, router, getErrorMessage]);
+    },
+    [
+      formData.email,
+      formData.password,
+      validateForm,
+      showError,
+      showWarning,
+      showSuccess,
+      setIsLoggedin,
+      setUser,
+      router,
+      getErrorMessage,
+    ]
+  );
 
   // Handle Google signin
   const handleGoogleSignIn = useCallback(async () => {
     setIsLoading(true);
-    
+
     try {
       const result = await signUpAndSignInWithGoogle();
-      
+
       if (result.user) {
         setIsLoggedin(true);
         setUser(result.user);

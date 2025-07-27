@@ -11,6 +11,6 @@ const Divider = memo(() => (
   </div>
 ));
 
-Divider.displayName = 'Divider';
+Divider.displayName = "Divider";
 
 export default Divider;

@@ -11,7 +11,7 @@ export default function useFormValidation(initialState, validateFn) {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
-    
+
     // Clear error when user starts typing
     setErrors((prev) => (prev[name] ? { ...prev, [name]: "" } : prev));
   }, []);

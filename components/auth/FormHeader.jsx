@@ -7,6 +7,6 @@ const FormHeader = memo(({ title, subtitle }) => (
   </div>
 ));
 
-FormHeader.displayName = 'FormHeader';
+FormHeader.displayName = "FormHeader";
 
 export default FormHeader;

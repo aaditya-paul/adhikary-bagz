@@ -27,6 +27,6 @@ const FormFooter = memo(({ type }) => (
   </div>
 ));
 
-FormFooter.displayName = 'FormFooter';
+FormFooter.displayName = "FormFooter";
 
 export default FormFooter;
