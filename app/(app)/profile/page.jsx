@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 import { signOutUser, updateUserProfile } from "@/lib/utils/authentication";
@@ -7,26 +7,23 @@ import { useNotification } from "@/hooks/useNotification";
 import { NotificationModal } from "@/components/ui/notifications";
 import Link from "next/link";
 
+// Constants
+const INITIAL_FORM_DATA = {
+  displayName: "",
+  email: "",
+  phoneNumber: "",
+};
+
 const ProfilePage = () => {
   const { user, isLoggedin, isLoading, setUser, setIsLoggedin } =
     useContext(UserContext);
   const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    displayName: "",
-    email: "",
-    phoneNumber: "",
-  });
-  const [isSaving, setIsSaving] = useState(false);
+  const { notification, hideNotification, showSuccess, showError } =
+    useNotification();
 
-  const {
-    notification,
-    showNotification,
-    hideNotification,
-    showSuccess,
-    showError,
-    showWarning,
-  } = useNotification();
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Redirect to signin if not logged in
   useEffect(() => {
@@ -46,15 +43,15 @@ const ProfilePage = () => {
     }
   }, [user]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-  };
+  }, []);
 
-  const handleSaveProfile = async () => {
+  const handleSaveProfile = useCallback(async () => {
     setIsSaving(true);
     try {
       const result = await updateUserProfile(user.uid, formData);
@@ -72,9 +69,9 @@ const ProfilePage = () => {
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [user, formData, setUser, setIsEditing, showSuccess, showError]);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     try {
       const result = await signOutUser();
       if (result.success) {
@@ -91,7 +88,7 @@ const ProfilePage = () => {
       showError("An error occurred while signing out");
       console.error("Sign out error:", error);
     }
-  };
+  }, [setUser, setIsLoggedin, showSuccess, showError, router]);
 
   // Show loading while checking authentication
   if (isLoading) {

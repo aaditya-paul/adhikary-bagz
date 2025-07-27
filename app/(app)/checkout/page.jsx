@@ -1,15 +1,23 @@
 "use client";
-import React, { useState, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 import { useNotification } from "@/hooks/useNotification";
 import { NotificationModal } from "@/components/ui/notifications";
-import CheckoutHeader from "@/components/checkout/CheckoutHeader";
-import BillingForm from "@/components/checkout/BillingForm";
-import ShippingForm from "@/components/checkout/ShippingForm";
-import PaymentForm from "@/components/checkout/PaymentForm";
-import OrderSummary from "@/components/checkout/OrderSummary";
-import ProgressSteps from "@/components/checkout/ProgressSteps";
+import {
+  CheckoutHeader,
+  BillingForm,
+  ShippingForm,
+  PaymentForm,
+  OrderSummary,
+  ProgressSteps,
+} from "@/components/checkout";
 import {
   addDoc,
   doc,
@@ -19,6 +27,43 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
+
+// Constants
+const INITIAL_SHIPPING_DATA = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  address: "",
+  apartment: "",
+  city: "",
+  state: "",
+  zipCode: "",
+  country: "United States",
+};
+
+const INITIAL_BILLING_DATA = {
+  firstName: "",
+  lastName: "",
+  address: "",
+  apartment: "",
+  city: "",
+  state: "",
+  zipCode: "",
+  country: "United States",
+};
+
+const INITIAL_PAYMENT_DATA = {
+  cardNumber: "",
+  expiryDate: "",
+  cvv: "",
+  cardName: "",
+  paymentMethod: "credit_card", // Default payment method
+  saveCard: false,
+};
+
+const SHIPPING_COST = 10.99;
+const TAX_RATE = 0.0875; // 8.75%
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -34,7 +79,6 @@ const CheckoutPage = () => {
 
   const {
     notification,
-    showNotification,
     hideNotification,
     showSuccess,
     showError,
@@ -48,38 +92,9 @@ const CheckoutPage = () => {
   const [sameAsShipping, setSameAsShipping] = useState(true);
 
   // Form states
-  const [shippingData, setShippingData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    address: "",
-    apartment: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    country: "United States",
-  });
-
-  const [billingData, setBillingData] = useState({
-    firstName: "",
-    lastName: "",
-    address: "",
-    apartment: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    country: "United States",
-  });
-
-  const [paymentData, setPaymentData] = useState({
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    cardName: "",
-    saveCard: false,
-  });
-
+  const [shippingData, setShippingData] = useState(INITIAL_SHIPPING_DATA);
+  const [billingData, setBillingData] = useState(INITIAL_BILLING_DATA);
+  const [paymentData, setPaymentData] = useState(INITIAL_PAYMENT_DATA);
   const [promoCode, setPromoCode] = useState("");
   const [isPromoApplied, setIsPromoApplied] = useState(false);
 
@@ -119,61 +134,76 @@ const CheckoutPage = () => {
     }
   }, [user]);
 
-  // Calculate totals
-  const subtotal = cartProductsDetails.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-  const shipping = subtotal > 200 ? 0 : 15.99;
-  const tax = subtotal * 0.08; // 8% tax
-  const discount = isPromoApplied ? subtotal * 0.1 : 0;
-  const total = subtotal + shipping + tax - discount;
+  // Calculate totals with memoization
+  const totals = useMemo(() => {
+    const subtotal = cartProductsDetails.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    const shipping = subtotal > 200 ? 0 : SHIPPING_COST;
+    const tax = subtotal * TAX_RATE;
+    const discount = isPromoApplied ? subtotal * 0.1 : 0;
+    const total = subtotal + shipping + tax - discount;
 
-  const applyPromoCode = () => {
+    return { subtotal, shipping, tax, discount, total };
+  }, [cartProductsDetails, isPromoApplied]);
+
+  // Promo code handler
+  const applyPromoCode = useCallback(() => {
     if (promoCode.toLowerCase() === "nomada10") {
       setIsPromoApplied(true);
       showSuccess("Promo code applied! 10% discount added.");
     } else {
       showError("Invalid promo code. Please try again.");
     }
-  };
+  }, [promoCode, showSuccess, showError]);
 
-  const validateStep = (step) => {
-    switch (step) {
-      case 1: // Shipping
-        const requiredShipping = [
-          "firstName",
-          "lastName",
-          "email",
-          "address",
-          "city",
-          "state",
-          "zipCode",
-        ];
-        return requiredShipping.every((field) => shippingData[field]?.trim());
+  // Validation helper
+  const validateStep = useCallback(
+    (step) => {
+      switch (step) {
+        case 1: // Shipping
+          const requiredShipping = [
+            "firstName",
+            "lastName",
+            "email",
+            "address",
+            "city",
+            "state",
+            "zipCode",
+          ];
+          return requiredShipping.every((field) => shippingData[field]?.trim());
 
-      case 2: // Billing
-        if (sameAsShipping) return true;
-        const requiredBilling = [
-          "firstName",
-          "lastName",
-          "address",
-          "city",
-          "state",
-          "zipCode",
-        ];
-        return requiredBilling.every((field) => billingData[field]?.trim());
+        case 2: // Billing
+          if (sameAsShipping) return true;
+          const requiredBilling = [
+            "firstName",
+            "lastName",
+            "address",
+            "city",
+            "state",
+            "zipCode",
+          ];
+          return requiredBilling.every((field) => billingData[field]?.trim());
 
-      case 3: // Payment
-        const requiredPayment = ["cardNumber", "expiryDate", "cvv", "cardName"];
-        return requiredPayment.every((field) => paymentData[field]?.trim());
+        case 3: // Payment
+          const requiredPayment = [
+            "cardNumber",
+            "expiryDate",
+            "cvv",
+            "cardName",
+          ];
+          return requiredPayment.every((field) => paymentData[field]?.trim());
 
-      default:
-        return false;
-    }
-  };
+        default:
+          return false;
+      }
+    },
+    [shippingData, billingData, paymentData, sameAsShipping]
+  );
 
-  const nextStep = () => {
+  // Navigation handlers
+  const nextStep = useCallback(() => {
     if (!validateStep(currentStep)) {
       showError("Please fill in all required fields");
       return;
@@ -182,15 +212,16 @@ const CheckoutPage = () => {
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
-  };
+  }, [currentStep, validateStep, showError]);
 
-  const prevStep = () => {
+  const prevStep = useCallback(() => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
-  };
+  }, [currentStep]);
 
-  const handlePlaceOrder = async () => {
+  // Order placement handler
+  const handlePlaceOrder = useCallback(async () => {
     if (!validateStep(3)) {
       showError("Please complete all payment information");
       return;
@@ -208,11 +239,11 @@ const CheckoutPage = () => {
         id,
         userId: user.uid,
         cartItems: cartProductsDetails,
-        totalPrice: total,
-        subtotal,
-        shipping,
-        tax,
-        discount,
+        totalPrice: totals.total,
+        subtotal: totals.subtotal,
+        shipping: totals.shipping,
+        tax: totals.tax,
+        discount: totals.discount,
         status: "processing",
         createdAt: timeStamp,
         shippingData,
@@ -254,7 +285,20 @@ const CheckoutPage = () => {
       setIsProcessing(false);
     }
     // Note: Don't set isProcessing to false here in success case to prevent UI flicker
-  };
+  }, [
+    validateStep,
+    showError,
+    user,
+    cartProductsDetails,
+    totals,
+    shippingData,
+    billingData,
+    paymentData,
+    showSuccess,
+    router,
+    setCartProducts,
+    setCartProductsDetails,
+  ]);
 
   if (isCartProductsLoading || isNavigating) {
     return (
@@ -323,11 +367,11 @@ const CheckoutPage = () => {
           <div className="lg:col-span-1">
             <OrderSummary
               items={cartProductsDetails}
-              subtotal={subtotal}
-              shipping={shipping}
-              tax={tax}
-              discount={discount}
-              total={total}
+              subtotal={totals.subtotal}
+              shipping={totals.shipping}
+              tax={totals.tax}
+              discount={totals.discount}
+              total={totals.total}
               promoCode={promoCode}
               setPromoCode={setPromoCode}
               isPromoApplied={isPromoApplied}

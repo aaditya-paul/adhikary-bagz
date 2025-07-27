@@ -1,60 +1,60 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNotification } from "@/hooks/useNotification";
 import { NotificationModal } from "@/components/ui/notifications";
 import { ProductFilters, ProductCard } from "@/components/product";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 
+// Constants
+const INITIAL_FILTERS = {
+  category: "all",
+  priceRange: "all",
+  sortBy: "name",
+  searchTerm: "",
+};
+
 const ShopPage = () => {
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    category: "all",
-    priceRange: "all",
-    sortBy: "name",
-    searchTerm: "",
-  });
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [categories, setCategories] = useState([]);
-  const { notification, showNotification, hideNotification, showError } =
-    useNotification();
+  const { notification, hideNotification, showError } = useNotification();
 
   // Fetch products from Firestore
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const productsRef = collection(db, "Products");
-        const querySnapshot = await getDocs(productsRef);
+  const fetchProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const productsRef = collection(db, "Products");
+      const querySnapshot = await getDocs(productsRef);
 
-        const productsList = [];
-        const categoriesSet = new Set();
+      const productsList = [];
+      const categoriesSet = new Set();
 
-        querySnapshot.forEach((doc) => {
-          const productData = { id: doc.id, ...doc.data() };
-          productsList.push(productData);
-          if (productData.category) {
-            categoriesSet.add(productData.category);
-          }
-        });
-        console.log("productsList", productsList);
-        setProducts(productsList);
-        setCategories(Array.from(categoriesSet));
-        setFilteredProducts(productsList);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        showError("Failed to load products. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
+      querySnapshot.forEach((doc) => {
+        const productData = { id: doc.id, ...doc.data() };
+        productsList.push(productData);
+        if (productData.category) {
+          categoriesSet.add(productData.category);
+        }
+      });
 
-    fetchProducts();
+      setProducts(productsList);
+      setCategories(Array.from(categoriesSet));
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      showError("Failed to load products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }, [showError]);
 
-  // Apply filters whenever filters change
   useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  // Apply filters with memoization
+  const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
     // Category filter
@@ -105,21 +105,17 @@ const ShopPage = () => {
       }
     });
 
-    setFilteredProducts(filtered);
+    return filtered;
   }, [products, filters]);
 
-  const handleFilterChange = (filterType, value) => {
+  // Filter handlers
+  const handleFilterChange = useCallback((filterType, value) => {
     setFilters((prev) => ({ ...prev, [filterType]: value }));
-  };
+  }, []);
 
-  const clearFilters = () => {
-    setFilters({
-      category: "all",
-      priceRange: "all",
-      sortBy: "name",
-      searchTerm: "",
-    });
-  };
+  const clearFilters = useCallback(() => {
+    setFilters(INITIAL_FILTERS);
+  }, []);
 
   if (loading) {
     return (

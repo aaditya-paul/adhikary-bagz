@@ -69,6 +69,74 @@ const PaymentForm = ({ data, setData, onPrev, onPlaceOrder, isProcessing }) => {
       </h2>
 
       <div className="space-y-4 sm:space-y-6">
+        {/* Payment Method Selection */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Payment Method *
+          </label>
+          <div className="space-y-3">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="credit_card"
+                name="paymentMethod"
+                value="credit_card"
+                checked={data.paymentMethod === "credit_card"}
+                onChange={handleChange}
+                className="h-4 w-4 text-gray-900 border-gray-300 focus:ring-gray-900"
+              />
+              <label
+                htmlFor="credit_card"
+                className="ml-3 flex items-center text-sm font-medium text-gray-700"
+              >
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                  />
+                </svg>
+                Credit Card
+              </label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="debit_card"
+                name="paymentMethod"
+                value="debit_card"
+                checked={data.paymentMethod === "debit_card"}
+                onChange={handleChange}
+                className="h-4 w-4 text-gray-900 border-gray-300 focus:ring-gray-900"
+              />
+              <label
+                htmlFor="debit_card"
+                className="ml-3 flex items-center text-sm font-medium text-gray-700"
+              >
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                  />
+                </svg>
+                Debit Card
+              </label>
+            </div>
+          </div>
+        </div>
         {/* Card Number */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
