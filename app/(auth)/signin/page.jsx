@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import Link from "next/link";
 import InputField from "@/components/auth/InputField";
 import PasswordField from "@/components/auth/PasswordField";
@@ -11,6 +11,8 @@ import {
   SignInWithEmail,
   signUpAndSignInWithGoogle,
 } from "@/lib/utils/authentication";
+import useFormValidation from "@/hooks/useFormValidation";
+import { validateSignInForm } from "@/lib/utils/validation";
 import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 import { useNotification } from "@/hooks/useNotification";
@@ -27,75 +29,40 @@ const SignInPage = () => {
     showError,
     showWarning,
   } = useNotification();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
 
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email";
-    }
-
-    if (!formData.password.trim()) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const {
+    formData,
+    setFormData,
+    errors,
+    setErrors,
+    handleChange,
+    validateForm,
+  } = useFormValidation(
+    {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+    validateSignInForm
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
-
     setIsLoading(true);
-
     try {
       const result = await SignInWithEmail(formData.email, formData.password);
-      console.log("Sign in result:", result);
-
       if (result.user && !result.emailVerified) {
         showWarning(result.message, 8000);
         setIsLoading(false);
         return;
       }
-
       if (result.user && result.emailVerified) {
-        console.log("Sign in successful:", result.user);
         setIsLoggedin(true);
         setUser(result.user);
         showSuccess(result.message, 3000);
-
-        // Redirect to home page after showing success notification
         setTimeout(() => {
           router.push("/");
         }, 3000);
@@ -103,7 +70,6 @@ const SignInPage = () => {
         showError(result.message || "Sign in failed. Please try again.");
       }
     } catch (error) {
-      console.error("Sign in error:", error);
       showError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);

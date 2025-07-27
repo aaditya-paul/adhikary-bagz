@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import Link from "next/link";
 import InputField from "@/components/auth/InputField";
 import PasswordField from "@/components/auth/PasswordField";
@@ -8,11 +8,11 @@ import FormHeader from "@/components/auth/FormHeader";
 import FormFooter from "@/components/auth/FormFooter";
 import Divider from "@/components/auth/Divider";
 import {
-  SignUpAndSignIn,
-  signUpAndSignInWithEmail,
   SignUpWithEmail,
   signUpAndSignInWithGoogle,
 } from "@/lib/utils/authentication";
+import useFormValidation from "@/hooks/useFormValidation";
+import { validateSignUpForm } from "@/lib/utils/validation";
 import { useRouter } from "next/navigation";
 import { createNewUserData } from "@/lib/utils/storeData";
 import { useNotification } from "@/hooks/useNotification";
@@ -30,121 +30,57 @@ const SignUpPage = () => {
     showWarning,
   } = useNotification();
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreeToTerms: false,
-    subscribeNewsletter: true,
-  });
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required";
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = "Last name is required";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email";
-    }
-
-    if (!formData.password.trim()) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password =
-        "Password must contain uppercase, lowercase, and number";
-    }
-
-    if (!formData.confirmPassword.trim()) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = "You must agree to the terms and conditions";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const {
+    formData,
+    setFormData,
+    errors,
+    setErrors,
+    handleChange,
+    validateForm,
+  } = useFormValidation(
+    {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      agreeToTerms: false,
+      subscribeNewsletter: true,
+    },
+    validateSignUpForm
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) {
       showError("Please fix the form errors before submitting.");
       return;
     }
-
     setIsLoading(true);
-
     try {
-      console.log("Sign up data:", formData);
       const result = await SignUpWithEmail(
         `${formData.firstName} ${formData.lastName}`,
         formData.email,
         formData.password
       );
-      console.log("User signed up successfully: ", result);
-
-      // Show success message from Firebase
       if (result.message) {
-        showSuccess(result.message, 5000); // Show for 5 seconds
+        showSuccess(result.message, 5000);
       }
-
-      console.log("Creating user data...");
       await createNewUserData(result.user.uid, {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         subscribeNewsletter: formData.subscribeNewsletter,
       });
-
-      console.log("User data created successfully");
-
-      // Redirect after a delay to allow user to see the success message
       setTimeout(() => {
         router.replace("/");
       }, 5000);
     } catch (error) {
-      console.error("Sign up error:", error);
-
-      // Handle specific Firebase errors
       let errorMessage = "An error occurred during sign up. Please try again.";
-
       if (error.code === "auth/email-already-in-use") {
         errorMessage =
           "This email is already registered. Please use a different email or try signing in.";
@@ -159,8 +95,7 @@ const SignUpPage = () => {
       } else if (error.message) {
         errorMessage = error.message;
       }
-
-      showError(errorMessage, 7000); // Show error for 7 seconds
+      showError(errorMessage, 7000);
     } finally {
       setIsLoading(false);
     }
@@ -168,30 +103,19 @@ const SignUpPage = () => {
 
   const handleGoogleSignUp = async () => {
     setIsLoading(true);
-
     try {
       const result = await signUpAndSignInWithGoogle();
-      console.log("Google sign up result:", result);
-
       if (result.user) {
-        console.log("Google sign up successful:", result.user);
-
-        // Set user context
         setIsLoggedin(true);
         setUser(result.user);
-
-        // Create user data in Firestore
         await createNewUserData(result.user.uid, {
           firstName: result.user.displayName?.split(" ")[0] || "",
           lastName:
             result.user.displayName?.split(" ").slice(1).join(" ") || "",
           email: result.user.email,
-          subscribeNewsletter: true, // Default to true for Google users
+          subscribeNewsletter: true,
         });
-
         showSuccess(result.message, 3000);
-
-        // Redirect to home page after showing success notification
         setTimeout(() => {
           router.replace("/");
         }, 3000);
@@ -199,7 +123,6 @@ const SignUpPage = () => {
         showError(result.message || "Google sign up failed. Please try again.");
       }
     } catch (error) {
-      console.error("Google sign up error:", error);
       showError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
