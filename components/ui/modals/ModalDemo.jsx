@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Modal, { ConfirmationModal, AlertModal } from "@/components/Modal";
+import Modal, { ConfirmationModal, AlertModal } from "./Modal";
 import {
   useModal,
   useConfirmationModal,
