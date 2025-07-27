@@ -48,7 +48,7 @@ const Navbar = ({ children }) => {
             <Logo className="text-3xl cursor-pointer hover:text-gray-600 transition-colors" />
           </Link>
         </div>
-        <ul className="flex justify-end items-center gap-4 p-4 text-xl">
+        <ul className="flex justify-end items-center gap-2 p-4 text-xl">
           <li>
             <button className="cursor-pointer p-2 flex justify-center items-center hover:bg-gray-100 rounded-full transition-colors">
               <Icon source={icons.search} />

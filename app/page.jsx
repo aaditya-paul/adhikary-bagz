@@ -9,7 +9,6 @@ import {
   LuxuryStatement,
   BrandVision,
 } from "@/components/brand";
-// import AdminPanel from "@/components/admin";
 import { Navbar, Footer } from "@/components/layout";
 
 export default function Home() {
