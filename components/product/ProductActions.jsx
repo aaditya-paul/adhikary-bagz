@@ -24,7 +24,7 @@ const ProductActions = ({
             <button
               key={size}
               onClick={() => setSelectedSize(size)}
-              className={`px-4 py-2 border rounded-md ${
+              className={`px-4 py-2 border rounded-md cursor-pointer ${
                 selectedSize === size
                   ? "border-gray-900 bg-gray-900 text-white"
                   : "border-gray-200 hover:border-gray-400"
@@ -44,14 +44,14 @@ const ProductActions = ({
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="w-10 h-10 border border-gray-200 rounded-md flex items-center justify-center hover:border-gray-400"
+            className="w-10 h-10 border cursor-pointer border-gray-200 rounded-md flex items-center justify-center hover:border-gray-400"
           >
             -
           </button>
           <span className="w-16 text-center">{quantity}</span>
           <button
             onClick={() => setQuantity(quantity + 1)}
-            className="w-10 h-10 border border-gray-200 rounded-md flex items-center justify-center hover:border-gray-400"
+            className="w-10 h-10 border cursor-pointer border-gray-200 rounded-md flex items-center justify-center hover:border-gray-400"
           >
             +
           </button>
@@ -77,14 +77,14 @@ const ProductActions = ({
         <button
           onClick={handleAddToCart}
           disabled={!product.inStock || isAddingToCart}
-          className="w-full bg-gray-900 text-white py-3 px-6 rounded-md hover:bg-gray-800 transition-colors duration-300 disabled:bg-gray-400"
+          className="w-full bg-gray-900 cursor-pointer text-white py-3 px-6 rounded-md hover:bg-gray-800 transition-colors duration-300 disabled:bg-gray-400"
         >
           {isAddingToCart ? "Adding..." : "Add to Cart"}
         </button>
         <button
           onClick={handleBuyNow}
           disabled={!product.inStock}
-          className="w-full border border-gray-900 text-gray-900 py-3 px-6 rounded-md hover:bg-gray-900 hover:text-white transition-colors duration-300 disabled:border-gray-400 disabled:text-gray-400"
+          className="w-full border border-gray-900 cursor-pointer text-gray-900 py-3 px-6 rounded-md hover:bg-gray-900 hover:text-white transition-colors duration-300 disabled:border-gray-400 disabled:text-gray-400"
         >
           Buy Now
         </button>

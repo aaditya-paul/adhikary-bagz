@@ -40,28 +40,28 @@ const NotificationDemo = () => {
       <div className="grid grid-cols-2 gap-4">
         <button
           onClick={handleSuccess}
-          className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+          className="px-6 py-3 bg-green-500 cursor-pointer text-white rounded-lg hover:bg-green-600 transition-colors"
         >
           Show Success
         </button>
 
         <button
           onClick={handleError}
-          className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+          className="px-6 py-3 bg-red-500 cursor-pointer text-white rounded-lg hover:bg-red-600 transition-colors"
         >
           Show Error
         </button>
 
         <button
           onClick={handleWarning}
-          className="px-6 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+          className="px-6 py-3 bg-yellow-500 cursor-pointer text-white rounded-lg hover:bg-yellow-600 transition-colors"
         >
           Show Warning
         </button>
 
         <button
           onClick={handleInfo}
-          className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          className="px-6 py-3 bg-blue-500 text-white cursor-pointer rounded-lg hover:bg-blue-600 transition-colors"
         >
           Show Info
         </button>

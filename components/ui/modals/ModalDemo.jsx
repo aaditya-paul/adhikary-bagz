@@ -57,14 +57,14 @@ const ModalDemo = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <button
             onClick={basicModal.openModal}
-            className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+            className="px-6 py-3 bg-gray-900 cursor-pointer text-white rounded-lg hover:bg-gray-800 transition-colors"
           >
             Basic Modal
           </button>
 
           <button
             onClick={() => alertModal.showSuccess("Order placed successfully!")}
-            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="px-6 py-3 bg-green-600 cursor-pointer text-white rounded-lg hover:bg-green-700 transition-colors"
           >
             Success Alert
           </button>
@@ -73,7 +73,7 @@ const ModalDemo = () => {
             onClick={() =>
               alertModal.showError("Payment failed. Please try again.")
             }
-            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="px-6 py-3 bg-red-600 cursor-pointer text-white rounded-lg hover:bg-red-700 transition-colors"
           >
             Error Alert
           </button>
@@ -82,7 +82,7 @@ const ModalDemo = () => {
             onClick={() =>
               alertModal.showWarning("Your session will expire in 5 minutes.")
             }
-            className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+            className="px-6 py-3 bg-yellow-600 cursor-pointer text-white rounded-lg hover:bg-yellow-700 transition-colors"
           >
             Warning Alert
           </button>
@@ -97,14 +97,14 @@ const ModalDemo = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <button
             onClick={handleDeleteAction}
-            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="px-6 py-3 bg-red-600 cursor-pointer text-white rounded-lg hover:bg-red-700 transition-colors"
           >
             Delete Item (Danger)
           </button>
 
           <button
             onClick={handleLogoutAction}
-            className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+            className="px-6 py-3 bg-yellow-600 cursor-pointer text-white rounded-lg hover:bg-yellow-700 transition-colors"
           >
             Sign Out (Warning)
           </button>
@@ -144,7 +144,7 @@ const ModalDemo = () => {
           <div className="flex gap-3 pt-4">
             <button
               onClick={basicModal.closeModal}
-              className="flex-1 px-4 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition-colors"
+              className="flex-1 px-4 py-2 bg-gray-200 cursor-pointer text-gray-900 rounded-lg hover:bg-gray-300 transition-colors"
             >
               Close
             </button>
@@ -153,7 +153,7 @@ const ModalDemo = () => {
                 basicModal.closeModal();
                 alertModal.showSuccess("Action completed successfully!");
               }}
-              className="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+              className="flex-1 px-4 py-2 bg-gray-900 cursor-pointer text-white rounded-lg hover:bg-gray-800 transition-colors"
             >
               Confirm
             </button>

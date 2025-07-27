@@ -104,7 +104,7 @@ const NotificationModal = ({
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center hover:bg-black/20 rounded-full transition-colors"
+          className="absolute top-2 cursor-pointer right-2 w-6 h-6 flex items-center justify-center hover:bg-black/20 rounded-full transition-colors"
         >
           ✕
         </button>

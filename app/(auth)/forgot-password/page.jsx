@@ -125,7 +125,7 @@ const ForgotPasswordPage = () => {
                   setIsEmailSent(false);
                   setFormData({ email: "" });
                 }}
-                className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium"
+                className="w-full cursor-pointer bg-gray-100 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium"
               >
                 Try Different Email
               </button>
@@ -209,7 +209,7 @@ const ForgotPasswordPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none font-medium"
+              className="w-full cursor-pointer bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none font-medium"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">

@@ -65,7 +65,7 @@ const Categories = () => {
 
         <div className="text-center mt-12">
           <Link href="/categories">
-            <button className="bg-black text-white px-8 py-3 rounded-full hover:bg-gray-800 transition-colors duration-300 text-lg cursor-pointer">
+            <button className="bg-black cursor-pointer text-white px-8 py-3 rounded-full hover:bg-gray-800 transition-colors duration-300 text-lg">
               View All Categories
             </button>
           </Link>

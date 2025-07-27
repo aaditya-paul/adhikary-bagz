@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useContext } from "react";
 import Logo from "./Logo";
 import { icons } from "@/constant";
-import Icon from "./icon";
+import Icon from "../ui/icon";
 import { UserContext } from "@/context/UserContext";
 
 const Navbar = ({ children }) => {

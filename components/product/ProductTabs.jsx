@@ -6,13 +6,13 @@ const ProductTabs = ({ product }) => {
     <div className="mt-16">
       <div className="border-b border-gray-200">
         <nav className="flex space-x-8">
-          <button className="py-2 px-1 border-b-2 border-gray-900 text-gray-900 font-medium">
+          <button className="py-2 px-1 border-b-2 border-gray-900 text-gray-900 font-medium cursor-pointer">
             Description
           </button>
-          <button className="py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+          <button className="py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 cursor-pointer">
             Specifications
           </button>
-          <button className="py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+          <button className="py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 cursor-pointer">
             Reviews
           </button>
         </nav>
@@ -27,9 +27,7 @@ const ProductTabs = ({ product }) => {
             {product.longDescription}
           </p>
 
-          <h4 className="text-lg font-medium text-gray-900 mb-4">
-            Features
-          </h4>
+          <h4 className="text-lg font-medium text-gray-900 mb-4">Features</h4>
           <ul className="space-y-2">
             {product.features.map((feature, index) => (
               <li key={index} className="flex items-start">

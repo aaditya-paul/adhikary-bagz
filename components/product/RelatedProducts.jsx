@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import ProductCard from "../ProductCard";
+import ProductCard from "../product/ProductCard";
 
 const RelatedProducts = ({ relatedProducts, isLoading }) => {
   if (!isLoading && relatedProducts.length === 0) {

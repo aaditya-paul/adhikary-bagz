@@ -128,7 +128,7 @@ const ProfilePage = () => {
               {!isEditing ? (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 cursor-pointer border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   Edit Profile
                 </button>
@@ -136,14 +136,14 @@ const ProfilePage = () => {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => setIsEditing(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 border cursor-pointer border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSaveProfile}
                     disabled={isSaving}
-                    className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors disabled:bg-gray-400"
+                    className="px-4 py-2 cursor-pointer bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors disabled:bg-gray-400"
                   >
                     {isSaving ? "Saving..." : "Save Changes"}
                   </button>
@@ -302,7 +302,7 @@ const ProfilePage = () => {
               </h3>
               <button
                 onClick={handleSignOut}
-                className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                className="w-full px-4 py-2 cursor-pointer bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
               >
                 Sign Out
               </button>

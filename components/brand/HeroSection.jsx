@@ -1,13 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import ImageCarousel from "./ImageCarousel";
+import ImageCarousel from "../ui/ImageCarousel";
 import { getCarouselImages } from "@/data/products";
 
 const HeroSection = () => {
   const [heroImages, setHeroImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  
   useEffect(() => {
     const fetchCarouselImages = async () => {
       try {

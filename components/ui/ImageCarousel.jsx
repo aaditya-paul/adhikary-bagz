@@ -72,7 +72,7 @@ const ImageCarousel = ({ images, autoSlideInterval = 4000 }) => {
       {/* Left Arrow */}
       <button
         onClick={goToPrevious}
-        className="absolute h-full left-0 top-1/2 transform -translate-y-1/2 p-4 bg-transparent hover:bg-white/20 hover:backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100"
+        className="absolute h-full left-0 cursor-pointer top-1/2 transform -translate-y-1/2 p-4 bg-transparent hover:bg-white/20 hover:backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100"
         aria-label="Previous image"
       >
         <svg
@@ -93,7 +93,7 @@ const ImageCarousel = ({ images, autoSlideInterval = 4000 }) => {
       {/* Right Arrow */}
       <button
         onClick={goToNext}
-        className="absolute h-full right-0 top-1/2 transform -translate-y-1/2 p-4 bg-transparent hover:bg-white/20 hover:backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100"
+        className="absolute h-full right-0 cursor-pointer top-1/2 transform -translate-y-1/2 p-4 bg-transparent hover:bg-white/20 hover:backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100"
         aria-label="Next image"
       >
         <svg
@@ -117,7 +117,7 @@ const ImageCarousel = ({ images, autoSlideInterval = 4000 }) => {
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className="transition-all duration-500 ease-in-out"
+            className="transition-all duration-500 ease-in-out cursor-pointer"
             aria-label={`Go to slide ${index + 1}`}
           >
             <div

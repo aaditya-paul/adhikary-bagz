@@ -41,7 +41,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
                   e.stopPropagation();
                   removeItem(item.id);
                 }}
-                className="text-red-500 hover:text-red-700 transition-colors p-1"
+                className="text-red-500 hover:text-red-700 cursor-pointer transition-colors p-1"
               >
                 <svg
                   className="w-4 h-4"
@@ -85,7 +85,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
                     e.stopPropagation();
                     updateQuantity(item.id, item.quantity - 1);
                   }}
-                  className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                  className="w-7 h-7 rounded-full border cursor-pointer border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
                 >
                   -
                 </button>
@@ -95,7 +95,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
                     e.stopPropagation();
                     updateQuantity(item.id, item.quantity + 1);
                   }}
-                  className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                  className="w-7 h-7 rounded-full border cursor-pointer border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
                 >
                   +
                 </button>
@@ -143,7 +143,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
               e.stopPropagation();
               updateQuantity(item.id, item.quantity - 1);
             }}
-            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+            className="w-8 h-8 rounded-full border border-gray-300 cursor-pointer flex items-center justify-center hover:bg-gray-100 transition-colors"
           >
             -
           </button>
@@ -153,7 +153,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
               e.stopPropagation();
               updateQuantity(item.id, item.quantity + 1);
             }}
-            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+            className="w-8 h-8 rounded-full border cursor-pointer border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
           >
             +
           </button>
@@ -173,7 +173,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
             e.stopPropagation();
             removeItem(item.id);
           }}
-          className="ml-4 text-red-500 hover:text-red-700 transition-colors"
+          className="ml-4 text-red-500 hover:text-red-700 cursor-pointer transition-colors"
         >
           <svg
             className="w-5 h-5"

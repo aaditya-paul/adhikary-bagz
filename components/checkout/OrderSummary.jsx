@@ -66,7 +66,7 @@ const OrderSummary = ({
           <button
             onClick={applyPromoCode}
             disabled={isPromoApplied}
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
+            className="px-4 py-2 bg-gray-900 cursor-pointer text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
           >
             Apply
           </button>

@@ -31,7 +31,7 @@ const ProductImageGallery = ({
           <button
             key={index}
             onClick={() => setSelectedImageIndex(index)}
-            className={`w-20 h-20 rounded-lg overflow-hidden border-2 ${
+            className={`w-20 h-20 rounded-lg overflow-hidden cursor-pointer border-2 ${
               selectedImageIndex === index
                 ? "border-gray-900"
                 : "border-gray-200"

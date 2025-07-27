@@ -200,7 +200,7 @@ const ShopPage = () => {
                 </p>
                 <button
                   onClick={clearFilters}
-                  className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+                  className="px-6 py-2 cursor-pointer bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
                 >
                   Clear filters
                 </button>

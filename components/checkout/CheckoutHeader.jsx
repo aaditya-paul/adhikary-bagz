@@ -33,7 +33,7 @@ const CheckoutHeader = () => {
         </h1>
         <button
           onClick={handleReturnToCart}
-          className="self-start sm:self-auto inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base"
+          className="self-start sm:self-auto cursor-pointer inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base"
         >
           <svg
             className="w-4 h-4 sm:w-5 sm:h-5 mr-2"

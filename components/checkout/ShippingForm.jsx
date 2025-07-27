@@ -233,7 +233,7 @@ const ShippingForm = ({ data, setData, onNext }) => {
         <div className="pt-4">
           <button
             onClick={onNext}
-            className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] font-medium text-base sm:text-lg"
+            className="w-full bg-gray-900 cursor-pointer text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] font-medium text-base sm:text-lg"
           >
             Continue to Billing
           </button>

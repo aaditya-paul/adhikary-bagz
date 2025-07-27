@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import LoadingScreen from "./LoadingScreen";
+import LoadingScreen from "../ui/loading/LoadingScreen";
 
 const ClientLayout = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -12,7 +12,13 @@ const ClientLayout = ({ children }) => {
   return (
     <>
       {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
-      <div className={isLoading ? "opacity-0" : "opacity-100 transition-opacity duration-500"}>
+      <div
+        className={
+          isLoading
+            ? "opacity-0"
+            : "opacity-100 transition-opacity duration-500"
+        }
+      >
         {children}
       </div>
     </>

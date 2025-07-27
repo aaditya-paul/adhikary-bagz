@@ -41,7 +41,7 @@ const ProductFilters = ({
       <div className="lg:hidden sticky top-16 z-50 bg-white border-b border-gray-200 p-4 mb-6">
         <button
           onClick={handleToggleFilters}
-          className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+          className="w-full flex items-center justify-between cursor-pointer px-4 py-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
         >
           <span className="flex items-center">
             <svg
@@ -240,7 +240,7 @@ const ProductFilters = ({
                       {filters.category}
                       <button
                         onClick={() => onFilterChange("category", "all")}
-                        className="ml-2 text-gray-500 hover:text-gray-700"
+                        className="ml-2 text-gray-500 cursor-pointer hover:text-gray-700"
                       >
                         ×
                       </button>
@@ -251,7 +251,7 @@ const ProductFilters = ({
                       ${filters.priceRange.replace("-", " - ")}
                       <button
                         onClick={() => onFilterChange("priceRange", "all")}
-                        className="ml-2 text-gray-500 hover:text-gray-700"
+                        className="ml-2 text-gray-500 cursor-pointer hover:text-gray-700"
                       >
                         ×
                       </button>
@@ -262,7 +262,7 @@ const ProductFilters = ({
                       "{filters.searchTerm}"
                       <button
                         onClick={() => onFilterChange("searchTerm", "")}
-                        className="ml-2 text-gray-500 hover:text-gray-700"
+                        className="ml-2 text-gray-500 cursor-pointer hover:text-gray-700"
                       >
                         ×
                       </button>
@@ -278,7 +278,7 @@ const ProductFilters = ({
               filters.searchTerm) && (
               <button
                 onClick={onClearFilters}
-                className="w-full px-4 py-3 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-3 text-sm cursor-pointer text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Clear All Filters
               </button>

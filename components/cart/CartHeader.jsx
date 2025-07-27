@@ -12,7 +12,7 @@ const CartHeader = ({ cartItemsCount, onClearCart, isClearingCart }) => {
           <button
             onClick={onClearCart}
             disabled={isClearingCart}
-            className="self-start sm:self-auto px-3 sm:px-4 py-2 text-sm text-red-600 border border-red-600 rounded-md hover:bg-red-600 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="self-start cursor-pointer sm:self-auto px-3 sm:px-4 py-2 text-sm text-red-600 border border-red-600 rounded-md hover:bg-red-600 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isClearingCart ? "Clearing..." : "Clear Cart"}
           </button>

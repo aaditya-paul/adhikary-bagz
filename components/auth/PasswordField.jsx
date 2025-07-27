@@ -32,7 +32,7 @@ const PasswordField = ({
       <button
         type="button"
         onClick={() => setShowPassword((prev) => !prev)}
-        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+        className="absolute cursor-pointer inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
         tabIndex={-1}
       >
         {showPassword ? (

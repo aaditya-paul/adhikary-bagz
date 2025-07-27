@@ -266,7 +266,7 @@ const SignUpPage = () => {
               className={`${
                 !formData.agreeToTerms
                   ? "cursor-not-allowed bg-gray-200 text-gray-500"
-                  : "bg-gray-900 hover:bg-gray-800 text-white"
+                  : "bg-gray-900 hover:bg-gray-800 text-white cursor-pointer"
               } w-full py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none font-medium`}
             >
               {isLoading ? (
