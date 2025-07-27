@@ -20,18 +20,24 @@ components/
 ## Folder Details
 
 ### 📁 `admin/`
+
 Components for administrative functionality:
+
 - `AdminPanel.jsx` - Main admin control panel
 
 ### 📁 `auth/`
+
 Authentication and user account components:
+
 - Form components (InputField, PasswordField, etc.)
 - Social login buttons
 - Form headers and footers
 - Authentication utilities
 
 ### 📁 `brand/`
+
 Brand identity and marketing components:
+
 - `BrandProgress.jsx` - Brand story progress indicator
 - `BrandShowcase.jsx` - Brand showcase section
 - `BrandVision.jsx` - Brand vision display
@@ -39,7 +45,9 @@ Brand identity and marketing components:
 - `LuxuryStatement.jsx` - Luxury brand statements
 
 ### 📁 `cart/`
+
 Shopping cart functionality:
+
 - `CartHeader.jsx` - Cart page header
 - `CartItem.jsx` - Individual cart item
 - `CartItemsList.jsx` - List of cart items
@@ -49,7 +57,9 @@ Shopping cart functionality:
 - `PromoCodeSection.jsx` - Promo code input
 
 ### 📁 `checkout/`
+
 Checkout process components:
+
 - `BillingForm.jsx` - Billing information form
 - `CheckoutHeader.jsx` - Checkout page header
 - `OrderSummary.jsx` - Checkout order summary
@@ -58,15 +68,20 @@ Checkout process components:
 - `ShippingForm.jsx` - Shipping information form
 
 ### 📁 `layout/`
+
 Layout and navigation components:
+
 - `Navbar.jsx` - Main navigation bar
 - `Footer.jsx` - Site footer
 - `ClientLayout.jsx` - Client-side layout wrapper
 - `Logo.jsx` - Brand logo component
 
 ### 📁 `product/`
+
 Product display and management:
+
 - **Detail Components:**
+
   - `ProductBreadcrumb.jsx` - Product page breadcrumbs
   - `ProductImageGallery.jsx` - Product image gallery
   - `ProductInfo.jsx` - Product information display
@@ -83,22 +98,27 @@ Product display and management:
   - `ProductFilters.jsx` - Product filtering options
 
 ### 📁 `ui/`
+
 Reusable UI components organized by type:
 
 #### `ui/loading/`
+
 - `LoadingScreen.jsx` - Full-screen loading state
 - `LoadingComponents.jsx` - Various loading indicators
 
 #### `ui/modals/`
+
 - `Modal.jsx` - Base modal component
 - `ModalDemo.jsx` - Modal demonstration
 
 #### `ui/notifications/`
+
 - `NotificationModal.jsx` - Notification modal
 - `NotificationProvider.jsx` - Notification context provider
 - `NotificationDemo.jsx` - Notification demonstration
 
 #### `ui/` (root)
+
 - `icon.jsx` - Icon components
 - `ImageCarousel.jsx` - Image carousel/slider
 
@@ -110,12 +130,12 @@ You can import components using their organized paths:
 
 ```javascript
 // From specific folders
-import { AdminPanel } from '@/components/admin';
-import { Navbar, Footer } from '@/components/layout';
-import { ProductCard, FeaturedProducts } from '@/components/product';
+import { AdminPanel } from "@/components/admin";
+import { Navbar, Footer } from "@/components/layout";
+import { ProductCard, FeaturedProducts } from "@/components/product";
 
 // Or from the main index (if configured)
-import { AdminPanel, Navbar, ProductCard } from '@/components';
+import { AdminPanel, Navbar, ProductCard } from "@/components";
 ```
 
 ### Best Practices
@@ -137,6 +157,7 @@ If you're updating imports after this reorganization:
 ## Contributing
 
 When adding new components:
+
 1. Place them in the appropriate folder based on functionality
 2. Update the corresponding index.js file
 3. Update this documentation if adding new folders or major components

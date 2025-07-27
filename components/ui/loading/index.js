@@ -1,3 +1,3 @@
 // Loading Components
-export { default as LoadingScreen } from './LoadingScreen';
-export { default as LoadingComponents } from './LoadingComponents';
+export { default as LoadingScreen } from "./LoadingScreen";
+export { default as LoadingComponents } from "./LoadingComponents";

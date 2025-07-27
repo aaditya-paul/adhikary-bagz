@@ -1,5 +1,14 @@
-import { Categories, FeaturedProducts, PopularProducts } from "@/components/product";
-import { HeroSection, BrandShowcase, LuxuryStatement, BrandVision } from "@/components/brand";
+import {
+  Categories,
+  FeaturedProducts,
+  PopularProducts,
+} from "@/components/product";
+import {
+  HeroSection,
+  BrandShowcase,
+  LuxuryStatement,
+  BrandVision,
+} from "@/components/brand";
 // import AdminPanel from "@/components/admin";
 import { Navbar, Footer } from "@/components/layout";
 
