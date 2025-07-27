@@ -1,5 +1,5 @@
 // Example usage of ImageCarousel component
-import ImageCarousel from "@/components/ImageCarousel";
+import { ImageCarousel } from "@/components/ui";
 
 const ExamplePage = () => {
   // Example images data

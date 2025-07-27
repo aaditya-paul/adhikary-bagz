@@ -1,9 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useNotification } from "@/hooks/useNotification";
-import NotificationModal from "@/components/NotificationModal";
-import ProductFilters from "@/components/shop/ProductFilters";
-import ProductCard from "@/components/ProductCard";
+import { NotificationModal } from "@/components/ui/notifications";
+import { ProductFilters, ProductCard } from "@/components/product";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 

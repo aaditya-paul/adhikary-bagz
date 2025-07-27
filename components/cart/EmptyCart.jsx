@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import NotificationModal from "@/components/NotificationModal";
+import { NotificationModal } from "@/components/ui/notifications";
 
 const EmptyCart = ({ notification, hideNotification }) => {
   return (

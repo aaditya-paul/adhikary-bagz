@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { resetPassword } from "@/lib/utils/authentication";
 import { useNotification } from "@/hooks/useNotification";
-import NotificationModal from "@/components/NotificationModal";
+import { NotificationModal } from "@/components/ui/notifications";
 
 const ForgotPasswordPage = () => {
   const { notification, hideNotification, showSuccess, showError } =

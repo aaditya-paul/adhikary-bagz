@@ -16,7 +16,7 @@ import { validateSignInForm } from "@/lib/utils/validation";
 import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 import { useNotification } from "@/hooks/useNotification";
-import NotificationModal from "@/components/NotificationModal";
+import { NotificationModal } from "@/components/ui/notifications";
 
 const SignInPage = () => {
   const router = useRouter();

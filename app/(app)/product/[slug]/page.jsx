@@ -10,7 +10,7 @@ import { addToCart } from "@/lib/utils/storeData";
 import { UserContext } from "@/context/UserContext";
 import { useRouter } from "next/navigation";
 import { useNotification } from "@/hooks/useNotification";
-import NotificationModal from "@/components/NotificationModal";
+import { NotificationModal } from "@/components/ui/notifications";
 import {
   ProductBreadcrumb,
   ProductImageGallery,

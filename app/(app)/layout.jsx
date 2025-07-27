@@ -1,8 +1,6 @@
 import { Geist, Geist_Mono, Bebas_Neue } from "next/font/google";
 import "../globals.css";
-import ClientLayout from "@/components/ClientLayout";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { ClientLayout, Navbar, Footer } from "@/components/layout";
 
 export const metadata = {
   title: "NÓMADA",

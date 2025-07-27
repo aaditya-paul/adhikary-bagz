@@ -3,7 +3,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 import { useNotification } from "@/hooks/useNotification";
-import NotificationModal from "@/components/NotificationModal";
+import { NotificationModal } from "@/components/ui/notifications";
 import CheckoutHeader from "@/components/checkout/CheckoutHeader";
 import BillingForm from "@/components/checkout/BillingForm";
 import ShippingForm from "@/components/checkout/ShippingForm";

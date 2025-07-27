@@ -9,7 +9,7 @@ import React, {
 import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 import { useNotification } from "@/hooks/useNotification";
-import NotificationModal from "@/components/NotificationModal";
+import { NotificationModal } from "@/components/ui/notifications";
 import EmptyCart from "@/components/cart/EmptyCart";
 import CartHeader from "@/components/cart/CartHeader";
 import CartItemsList from "@/components/cart/CartItemsList";

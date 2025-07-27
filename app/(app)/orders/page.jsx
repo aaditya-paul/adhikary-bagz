@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 import { useNotification } from "@/hooks/useNotification";
-import NotificationModal from "@/components/NotificationModal";
+import { NotificationModal } from "@/components/ui/notifications";
 import Link from "next/link";
 import Image from "next/image";
 import { getUserOrders, getMultipleOrderDetails } from "@/lib/utils/findData";

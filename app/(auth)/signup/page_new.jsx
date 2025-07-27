@@ -16,7 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 import { createNewUserData } from "@/lib/utils/storeData";
 import { useNotification } from "@/hooks/useNotification";
-import NotificationModal from "@/components/NotificationModal";
+import { NotificationModal } from "@/components/ui/notifications";
 import { UserContext } from "@/context/UserContext";
 
 const SignUpPage = () => {

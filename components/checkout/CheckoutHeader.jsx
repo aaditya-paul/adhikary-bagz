@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { ConfirmationModal } from "@/components/Modal";
+import { ConfirmationModal } from "@/components/ui/modals";
 import { useConfirmationModal } from "@/hooks/useModal";
 
 const CheckoutHeader = () => {

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 import { signOutUser, updateUserProfile } from "@/lib/utils/authentication";
 import { useNotification } from "@/hooks/useNotification";
-import NotificationModal from "@/components/NotificationModal";
+import { NotificationModal } from "@/components/ui/notifications";
 import Link from "next/link";
 
 const ProfilePage = () => {
