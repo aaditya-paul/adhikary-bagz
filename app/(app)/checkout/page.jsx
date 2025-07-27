@@ -58,7 +58,6 @@ const INITIAL_PAYMENT_DATA = {
   expiryDate: "",
   cvv: "",
   cardName: "",
-  paymentMethod: "credit_card", // Default payment method
   saveCard: false,
 };
 
