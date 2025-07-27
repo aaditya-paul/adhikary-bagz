@@ -1,108 +1,112 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useState, useCallback } from "react";
 import Link from "next/link";
-import InputField from "@/components/auth/InputField";
-import PasswordField from "@/components/auth/PasswordField";
-import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
-import FormHeader from "@/components/auth/FormHeader";
-import FormFooter from "@/components/auth/FormFooter";
-import Divider from "@/components/auth/Divider";
-import {
-  SignInWithEmail,
-  signUpAndSignInWithGoogle,
-} from "@/lib/utils/authentication";
-import useFormValidation from "@/hooks/useFormValidation";
-import { validateSignInForm } from "@/lib/utils/validation";
 import { useRouter } from "next/navigation";
 import { UserContext } from "@/context/UserContext";
 import { useNotification } from "@/hooks/useNotification";
+import useFormValidation from "@/hooks/useFormValidation";
+import { validateSignInForm } from "@/lib/utils/validation";
+import { SignInWithEmail, signUpAndSignInWithGoogle } from "@/lib/utils/authentication";
+import {
+  InputField,
+  PasswordField,
+  SocialLoginButtons,
+  FormHeader,
+  FormFooter,
+  Divider,
+} from "@/components/auth";
 import { NotificationModal } from "@/components/ui/notifications";
+
+// Constants
+const INITIAL_FORM_DATA = {
+  email: "",
+  password: "",
+  rememberMe: false,
+};
+
+const ERROR_MESSAGES = {
+  "auth/user-not-found": "No account found with this email address. Please check your email or sign up.",
+  "auth/wrong-password": "Incorrect password. Please try again or reset your password.",
+  "auth/invalid-email": "Please enter a valid email address.",
+  "auth/user-disabled": "This account has been disabled. Please contact support.",
+  "auth/too-many-requests": "Too many failed attempts. Please try again later.",
+  "auth/network-request-failed": "Network error. Please check your connection and try again.",
+  default: "An error occurred during sign in. Please try again.",
+};
 
 const SignInPage = () => {
   const router = useRouter();
   const { setIsLoggedin, setUser } = useContext(UserContext);
-  const {
-    notification,
-    showNotification,
-    hideNotification,
-    showSuccess,
-    showError,
-    showWarning,
-  } = useNotification();
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [showPassword, setShowPassword] = React.useState(false);
+  const { notification, hideNotification, showSuccess, showError, showWarning } = useNotification();
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const {
-    formData,
-    setFormData,
-    errors,
-    setErrors,
-    handleChange,
-    validateForm,
-  } = useFormValidation(
-    {
-      email: "",
-      password: "",
-      rememberMe: false,
-    },
+  const { formData, errors, handleChange, validateForm } = useFormValidation(
+    INITIAL_FORM_DATA,
     validateSignInForm
   );
 
-  const handleSubmit = async (e) => {
+  // Helper function to get error message
+  const getErrorMessage = useCallback((error) => {
+    return ERROR_MESSAGES[error.code] || error.message || ERROR_MESSAGES.default;
+  }, []);
+
+  // Handle email signin
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    
+    if (!validateForm()) {
+      showError("Please fix the form errors before submitting.");
+      return;
+    }
+    
     setIsLoading(true);
+    
     try {
       const result = await SignInWithEmail(formData.email, formData.password);
+      
       if (result.user && !result.emailVerified) {
         showWarning(result.message, 8000);
-        setIsLoading(false);
         return;
       }
+      
       if (result.user && result.emailVerified) {
         setIsLoggedin(true);
         setUser(result.user);
         showSuccess(result.message, 3000);
-        setTimeout(() => {
-          router.push("/");
-        }, 3000);
+        setTimeout(() => router.push("/"), 3000);
       } else {
         showError(result.message || "Sign in failed. Please try again.");
       }
     } catch (error) {
-      showError("An unexpected error occurred. Please try again.");
+      showError(getErrorMessage(error), 7000);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [formData.email, formData.password, validateForm, showError, showWarning, showSuccess, setIsLoggedin, setUser, router, getErrorMessage]);
 
-  const handleGoogleSignIn = async () => {
+  // Handle Google signin
+  const handleGoogleSignIn = useCallback(async () => {
     setIsLoading(true);
-
+    
     try {
       const result = await signUpAndSignInWithGoogle();
-      console.log("Google sign in result:", result);
-
+      
       if (result.user) {
-        console.log("Google sign in successful:", result.user);
         setIsLoggedin(true);
         setUser(result.user);
         showSuccess(result.message, 3000);
-
-        // Redirect to home page after showing success notification
-        setTimeout(() => {
-          router.push("/");
-        }, 3000);
+        setTimeout(() => router.push("/"), 3000);
       } else {
         showError(result.message || "Google sign in failed. Please try again.");
       }
     } catch (error) {
-      console.error("Google sign in error:", error);
       showError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [setIsLoggedin, setUser, showSuccess, showError, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center py-12 px-4 font-babas-neue">

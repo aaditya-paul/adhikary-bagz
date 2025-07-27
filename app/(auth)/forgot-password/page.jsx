@@ -1,23 +1,38 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Link from "next/link";
 import { resetPassword } from "@/lib/utils/authentication";
 import { useNotification } from "@/hooks/useNotification";
 import { NotificationModal } from "@/components/ui/notifications";
 
+// Constants
+const INITIAL_FORM_DATA = {
+  email: "",
+};
+
+const ERROR_MESSAGES = {
+  "auth/user-not-found": "No account found with this email address. Please check your email or sign up.",
+  "auth/invalid-email": "Please enter a valid email address.",
+  "auth/too-many-requests": "Too many password reset attempts. Please try again later.",
+  "auth/network-request-failed": "Network error. Please check your connection and try again.",
+  default: "Failed to send reset email. Please try again.",
+};
+
 const ForgotPasswordPage = () => {
-  const { notification, hideNotification, showSuccess, showError } =
-    useNotification();
+  const { notification, hideNotification, showSuccess, showError } = useNotification();
 
-  const [formData, setFormData] = useState({
-    email: "",
-  });
-
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
 
-  const handleChange = (e) => {
+  // Helper function to get error message
+  const getErrorMessage = useCallback((error) => {
+    return ERROR_MESSAGES[error.code] || error.message || ERROR_MESSAGES.default;
+  }, []);
+
+  // Handle input change
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -31,9 +46,10 @@ const ForgotPasswordPage = () => {
         [name]: "",
       }));
     }
-  };
+  }, [errors]);
 
-  const validateForm = () => {
+  // Validate form
+  const validateForm = useCallback(() => {
     const newErrors = {};
 
     if (!formData.email.trim()) {
@@ -44,12 +60,16 @@ const ForgotPasswordPage = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData.email]);
 
-  const handleSubmit = async (e) => {
+  // Handle form submission
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      showError("Please enter a valid email address.");
+      return;
+    }
 
     setIsLoading(true);
 
@@ -60,17 +80,21 @@ const ForgotPasswordPage = () => {
         setIsEmailSent(true);
         showSuccess(result.message, 5000);
       } else {
-        showError(
-          result.message || "Failed to send reset email. Please try again."
-        );
+        showError(result.message || ERROR_MESSAGES.default);
       }
     } catch (error) {
-      console.error("Password reset error:", error);
-      showError("An unexpected error occurred. Please try again.");
+      showError(getErrorMessage(error), 7000);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [formData.email, validateForm, showError, showSuccess, getErrorMessage]);
+
+  // Handle trying different email
+  const handleTryDifferentEmail = useCallback(() => {
+    setIsEmailSent(false);
+    setFormData(INITIAL_FORM_DATA);
+    setErrors({});
+  }, []);
 
   if (isEmailSent) {
     return (
@@ -121,10 +145,7 @@ const ForgotPasswordPage = () => {
             {/* Actions */}
             <div className="space-y-4">
               <button
-                onClick={() => {
-                  setIsEmailSent(false);
-                  setFormData({ email: "" });
-                }}
+                onClick={handleTryDifferentEmail}
                 className="w-full cursor-pointer bg-gray-100 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium"
               >
                 Try Different Email

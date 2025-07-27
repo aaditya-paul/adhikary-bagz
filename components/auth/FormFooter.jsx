@@ -1,7 +1,7 @@
-import React from "react";
+import React, { memo } from "react";
 import Link from "next/link";
 
-const FormFooter = ({ type }) => (
+const FormFooter = memo(({ type }) => (
   <div className="text-center mt-6">
     {type === "signup" ? (
       <p className="text-gray-600">
@@ -25,6 +25,8 @@ const FormFooter = ({ type }) => (
       </p>
     )}
   </div>
-);
+));
+
+FormFooter.displayName = 'FormFooter';
 
 export default FormFooter;

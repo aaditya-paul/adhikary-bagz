@@ -1,6 +1,6 @@
-import React from "react";
+import React, { memo } from "react";
 
-const InputField = ({
+const InputField = memo(({
   label,
   type = "text",
   name,
@@ -31,6 +31,8 @@ const InputField = ({
     />
     {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
   </div>
-);
+));
+
+InputField.displayName = 'InputField';
 
 export default InputField;
