@@ -175,7 +175,9 @@ const ProfilePage = () => {
                     />
                   ) : (
                     <p className="text-gray-900 py-2">
-                      {user.displayName || "Not set"}
+                      {user.displayName ||
+                        `${user.firstName} ${user.lastName}` ||
+                        "Not set"}
                     </p>
                   )}
                 </div>

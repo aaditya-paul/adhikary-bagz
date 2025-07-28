@@ -7,6 +7,7 @@ import { useNotification } from "@/hooks/useNotification";
 import useFormValidation from "@/hooks/useFormValidation";
 import { validateSignInForm } from "@/lib/utils/validation";
 import {
+  fetchUser,
   SignInWithEmail,
   signUpAndSignInWithGoogle,
 } from "@/lib/utils/authentication";
@@ -124,7 +125,8 @@ const SignInPage = () => {
 
       if (result.user) {
         setIsLoggedin(true);
-        setUser(result.user);
+        const user = await fetchUser(result.user.uid);
+        setUser({ ...user, emailVerified: true });
         showSuccess(result.message, 3000);
         setTimeout(() => router.push("/"), 3000);
       } else {
