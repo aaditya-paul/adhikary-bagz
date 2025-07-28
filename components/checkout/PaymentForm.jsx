@@ -1,59 +1,80 @@
 "use client";
 import { UserContext } from "@/context/UserContext";
 import React, { useContext, useEffect, useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  CardNumberElement,
+  CardExpiryElement,
+  CardCvcElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 
-const PaymentForm = ({ data, setData, onPrev, onPlaceOrder, isProcessing }) => {
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+);
+
+// Stripe Element styling
+const elementOptions = {
+  style: {
+    base: {
+      fontSize: "16px",
+      color: "#374151",
+      "::placeholder": {
+        color: "#9CA3AF",
+      },
+    },
+    invalid: {
+      color: "#EF4444",
+    },
+  },
+};
+
+const PaymentFormContent = ({
+  data,
+  setData,
+  onPrev,
+  onPlaceOrder,
+  isProcessing,
+}) => {
   const { user } = useContext(UserContext);
+  const stripe = useStripe();
+  const elements = useElements();
+  const [clientSecret, setClientSecret] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [cardComplete, setCardComplete] = useState({
+    cardNumber: false,
+    cardExpiry: false,
+    cardCvc: false,
+  });
+
+  // Calculate if all card fields are complete
+  const isCardComplete = Object.values(cardComplete).every(Boolean);
 
   useEffect(() => {
     if (user?.cardDetails) {
       setData((prev) => ({
         ...prev,
-        cardNumber: user.cardDetails.cardNumber || "",
         cardName: user.cardDetails.cardName || "",
-        expiryDate: user.cardDetails.expiryDate || "",
-        cvv: user.cardDetails.cvv || "",
-        saveCard: true, // Default to false for new orders
+        saveCard: false, // Don't auto-check, let user decide
       }));
     }
-  }, [user?.cardDetails]);
+  }, [user?.cardDetails, setData]);
+
+  // Reset submitting state if processing fails
+  useEffect(() => {
+    if (!isProcessing && isSubmitting) {
+      const timer = setTimeout(() => {
+        setIsSubmitting(false);
+      }, 1000); // Small delay to prevent flickering
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isProcessing, isSubmitting]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Format card number with spaces
-    if (name === "cardNumber") {
-      const formattedValue = value
-        .replace(/\s/g, "")
-        .replace(/(.{4})/g, "$1 ")
-        .trim();
-      if (formattedValue.length <= 19) {
-        // 16 digits + 3 spaces
-        setData((prev) => ({ ...prev, [name]: formattedValue }));
-      }
-      return;
-    }
-
-    // Format expiry date
-    if (name === "expiryDate") {
-      const formattedValue = value
-        .replace(/\D/g, "")
-        .replace(/(\d{2})(\d)/, "$1/$2");
-      if (formattedValue.length <= 5) {
-        setData((prev) => ({ ...prev, [name]: formattedValue }));
-      }
-      return;
-    }
-
-    // Limit CVV to 4 digits
-    if (name === "cvv") {
-      const formattedValue = value.replace(/\D/g, "");
-      if (formattedValue.length <= 4) {
-        setData((prev) => ({ ...prev, [name]: formattedValue }));
-      }
-      return;
-    }
-
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -62,29 +83,70 @@ const PaymentForm = ({ data, setData, onPrev, onPlaceOrder, isProcessing }) => {
     setData((prev) => ({ ...prev, [name]: checked }));
   };
 
+  const handleCardChange = (elementType) => (event) => {
+    setCardComplete((prev) => ({
+      ...prev,
+      [elementType]: event.complete,
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Immediately disable the button to prevent double submission
+    if (isSubmitting || isProcessing) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    if (!stripe || !elements) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const cardNumberElement = elements.getElement(CardNumberElement);
+
+      // Create payment method
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: "card",
+        card: cardNumberElement,
+        billing_details: {
+          name: data.cardName,
+        },
+      });
+
+      if (error) {
+        console.error("Error creating payment method:", error);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Add payment method to data and proceed with order
+      setData((prev) => ({
+        ...prev,
+        paymentMethod: paymentMethod.id,
+        stripePaymentMethod: paymentMethod,
+      }));
+
+      // Call the parent's place order function
+      await onPlaceOrder(paymentMethod);
+    } catch (error) {
+      console.error("Payment submission error:", error);
+      setIsSubmitting(false);
+    }
+    // Note: Don't set isSubmitting to false here in success case 
+    // as the parent component will handle the loading state
+  };
+
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
       <h2 className="text-xl sm:text-2xl font-light text-gray-900 mb-6">
         Payment Information
       </h2>
 
-      <div className="space-y-4 sm:space-y-6">
-        {/* Card Number */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Card Number *
-          </label>
-          <input
-            type="text"
-            name="cardNumber"
-            value={data.cardNumber}
-            onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-300 text-sm sm:text-base"
-            placeholder="1234 5678 9012 3456"
-            required
-          />
-        </div>
-
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {/* Cardholder Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -101,35 +163,42 @@ const PaymentForm = ({ data, setData, onPrev, onPlaceOrder, isProcessing }) => {
           />
         </div>
 
+        {/* Card Number */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Card Number *
+          </label>
+          <div className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-gray-900 focus-within:border-transparent transition-all duration-300">
+            <CardNumberElement
+              options={elementOptions}
+              onChange={handleCardChange("cardNumber")}
+            />
+          </div>
+        </div>
+
         {/* Expiry and CVV */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Expiry Date *
             </label>
-            <input
-              type="text"
-              name="expiryDate"
-              value={data.expiryDate}
-              onChange={handleChange}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-300 text-sm sm:text-base"
-              placeholder="MM/YY"
-              required
-            />
+            <div className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-gray-900 focus-within:border-transparent transition-all duration-300">
+              <CardExpiryElement
+                options={elementOptions}
+                onChange={handleCardChange("cardExpiry")}
+              />
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              CVV *
+              CVC *
             </label>
-            <input
-              type="text"
-              name="cvv"
-              value={data.cvv}
-              onChange={handleChange}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-300 text-sm sm:text-base"
-              placeholder="123"
-              required
-            />
+            <div className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-gray-900 focus-within:border-transparent transition-all duration-300">
+              <CardCvcElement
+                options={elementOptions}
+                onChange={handleCardChange("cardCvc")}
+              />
+            </div>
           </div>
         </div>
 
@@ -164,7 +233,7 @@ const PaymentForm = ({ data, setData, onPrev, onPlaceOrder, isProcessing }) => {
               />
             </svg>
             <p className="text-sm text-gray-600">
-              Your payment information is encrypted and secure
+              Your payment information is encrypted and secure with Stripe
             </p>
           </div>
         </div>
@@ -193,37 +262,49 @@ const PaymentForm = ({ data, setData, onPrev, onPlaceOrder, isProcessing }) => {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-6">
-        <button
-          onClick={onPrev}
-          disabled={isProcessing}
-          className={`${
-            isProcessing ? "cursor-none" : "cursor-pointer"
-          } w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-300 font-medium text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed`}
-        >
-          Back to Billing
-        </button>
-        <button
-          onClick={onPlaceOrder}
-          disabled={isProcessing}
-          className={`${
-            isProcessing ? "cursor-none" : "cursor-pointer"
-          } w-full sm:flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] font-medium text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
-        >
-          {isProcessing ? (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-              Processing Order...
-            </div>
-          ) : (
-            "Place Order"
-          )}
-        </button>
-      </div>
+        {/* Navigation Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-6">
+          <button
+            type="button"
+            onClick={onPrev}
+            disabled={isProcessing || isSubmitting}
+            className={`${
+              isProcessing || isSubmitting ? "cursor-not-allowed" : "cursor-pointer"
+            } w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-300 font-medium text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            Back to Billing
+          </button>
+          <button
+            type="submit"
+            disabled={
+              isProcessing || isSubmitting || !stripe || !isCardComplete || !data.cardName
+            }
+            className={`${
+              isProcessing || isSubmitting ? "cursor-not-allowed" : "cursor-pointer"
+            } w-full sm:flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] font-medium text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+          >
+            {isProcessing || isSubmitting ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                {isSubmitting ? "Validating Payment..." : "Processing Payment..."}
+              </div>
+            ) : (
+              "Place Order"
+            )}
+          </button>
+        </div>
+      </form>
     </div>
+  );
+};
+
+// Main PaymentForm component wrapped with Stripe Elements
+const PaymentForm = (props) => {
+  return (
+    <Elements stripe={stripePromise}>
+      <PaymentFormContent {...props} />
+    </Elements>
   );
 };
 

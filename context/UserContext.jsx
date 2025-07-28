@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 
@@ -27,6 +27,14 @@ const UserContextProvider = ({ children }) => {
     setIsCartProductsDetailsLoading,
   } = useCart(user);
 
+  // Orders refresh state
+  const [ordersRefreshTrigger, setOrdersRefreshTrigger] = useState(0);
+
+  // Function to trigger orders refresh
+  const refreshOrders = useCallback(() => {
+    setOrdersRefreshTrigger(prev => prev + 1);
+  }, []);
+
   return (
     <UserContext.Provider
       value={{
@@ -42,6 +50,8 @@ const UserContextProvider = ({ children }) => {
         setCartProductsDetails,
         isCartProductsDetailsLoading,
         setIsCartProductsDetailsLoading,
+        ordersRefreshTrigger,
+        refreshOrders,
       }}
     >
       {children}

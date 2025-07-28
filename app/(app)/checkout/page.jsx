@@ -28,6 +28,13 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 
+//stripe
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+);
+
 // Constants
 const INITIAL_SHIPPING_DATA = {
   firstName: "",
@@ -54,11 +61,10 @@ const INITIAL_BILLING_DATA = {
 };
 
 const INITIAL_PAYMENT_DATA = {
-  cardNumber: "",
-  expiryDate: "",
-  cvv: "",
   cardName: "",
   saveCard: false,
+  paymentMethod: null,
+  stripePaymentMethod: null,
 };
 
 const SHIPPING_COST = 10.99;
@@ -74,6 +80,7 @@ const CheckoutPage = () => {
     isCartProductsLoading,
     setCartProducts,
     setCartProductsDetails,
+    refreshOrders,
   } = useContext(UserContext);
 
   const {
@@ -186,12 +193,9 @@ const CheckoutPage = () => {
           return requiredBilling.every((field) => billingData[field]?.trim());
 
         case 3: // Payment
-          const requiredPayment = [
-            "cardNumber",
-            "expiryDate",
-            "cvv",
-            "cardName",
-          ];
+          // For Stripe Elements, we only need to check if cardholder name is filled
+          // The card completion is handled by the PaymentForm component itself
+          const requiredPayment = ["cardName"];
           return requiredPayment.every((field) => paymentData[field]?.trim());
 
         default:
@@ -219,85 +223,140 @@ const CheckoutPage = () => {
     }
   }, [currentStep]);
 
-  // Order placement handler
-  const handlePlaceOrder = useCallback(async () => {
-    if (!validateStep(3)) {
-      showError("Please complete all payment information");
-      return;
-    }
+  // Order placement handler with Stripe integration
+  const handlePlaceOrder = useCallback(
+    async (stripePaymentMethod = null) => {
+      // Use the payment method passed from PaymentForm if available
+      const finalPaymentData = stripePaymentMethod
+        ? {
+            ...paymentData,
+            stripePaymentMethod,
+            paymentMethod: stripePaymentMethod.id,
+          }
+        : paymentData;
 
-    setIsProcessing(true);
+      // Basic validation - the detailed payment validation is handled by PaymentForm
+      if (!finalPaymentData.cardName?.trim()) {
+        showError("Please enter cardholder name");
+        return;
+      }
 
-    try {
-      // Simulate order processing
-      const timeStamp = Date.now();
-      const id = `${timeStamp}`;
+      setIsProcessing(true);
 
-      // Set the order document with the generated id for easier reference
-      await setDoc(doc(db, "Orders", id), {
-        id,
-        userId: user.uid,
-        cartItems: cartProductsDetails,
-        totalPrice: totals.total,
-        subtotal: totals.subtotal,
-        shipping: totals.shipping,
-        tax: totals.tax,
-        discount: totals.discount,
-        status: "processing",
-        createdAt: timeStamp,
-        shippingData,
-        billingData,
-        paymentData: {
-          // Don't store sensitive payment info, just metadata
-          paymentMethod: paymentData.paymentMethod,
-          last4: paymentData.cardNumber
-            ? paymentData.cardNumber.slice(-4)
-            : null,
-        },
-      });
+      try {
+        // Create payment intent with Stripe
+        const response = await fetch("/api/create-payment-intent", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            amount: totals.total,
+            currency: "usd",
+            metadata: {
+              userId: user.uid,
+              cartItems: JSON.stringify(
+                cartProductsDetails.map((item) => ({
+                  id: item.id,
+                  name: item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+                }))
+              ),
+            },
+          }),
+        });
 
-      // Update user document
-      await updateDoc(doc(db, "users", user.uid), {
-        orders: arrayUnion({
+        if (!response.ok) {
+          throw new Error("Failed to create payment intent");
+        }
+
+        const { clientSecret, paymentIntentId } = await response.json();
+
+        // Generate order ID and timestamps
+        const id = Date.now().toString();
+        const timeStamp = serverTimestamp();
+        const regularTimeStamp = Date.now(); // For use in arrayUnion
+
+        // Set the order document with the generated id for easier reference
+        await setDoc(doc(db, "Orders", id), {
           id,
+          userId: user.uid,
+          cartItems: cartProductsDetails,
+          totalPrice: totals.total,
+          subtotal: totals.subtotal,
+          shipping: totals.shipping,
+          tax: totals.tax,
+          discount: totals.discount,
+          status: "processing",
           createdAt: timeStamp,
-        }),
-        cart: [],
-        cardDetails: paymentData.saveCard ? paymentData : null,
-      });
+          shippingData,
+          billingData,
+          paymentData: {
+            paymentMethod: finalPaymentData.paymentMethod || "stripe",
+            paymentIntentId,
+            last4: stripePaymentMethod?.card?.last4 || null,
+            cardBrand: stripePaymentMethod?.card?.brand || null,
+          },
+        });
 
-      // Show success message
-      showSuccess("Order placed successfully!");
+        // Update user document - add order to user's orders array
+        await updateDoc(doc(db, "users", user.uid), {
+          orders: arrayUnion({
+            id,
+            createdAt: regularTimeStamp, // Use regular timestamp here
+            orderNumber: id,
+            status: "processing",
+            totalPrice: totals.total,
+          }),
+          cart: [],
+          cardDetails: finalPaymentData.saveCard
+            ? {
+                cardName: finalPaymentData.cardName,
+                // Don't save actual card details, Stripe handles this
+                last4: stripePaymentMethod?.card?.last4 || null,
+                brand: stripePaymentMethod?.card?.brand || null,
+              }
+            : null,
+        }); // Show success message
+        showSuccess("Order placed successfully!");
 
-      // Set navigation state and redirect
-      setIsNavigating(true);
-      router.push(`/order-confirmation?order=${id}`);
+        // Refresh orders data for the orders page
+        if (refreshOrders) {
+          refreshOrders();
+        }
 
-      // Clear cart after a small delay to allow navigation
-      setTimeout(() => {
-        setCartProducts([]);
-        setCartProductsDetails([]);
-      }, 100);
-    } catch (error) {
-      console.error("Order processing error:", error);
-      showError("Failed to process order. Please try again.");
-      setIsProcessing(false);
-    }
-    // Note: Don't set isProcessing to false here in success case to prevent UI flicker
-  }, [
-    validateStep,
-    showError,
-    user,
-    cartProductsDetails,
-    totals,
-    shippingData,
-    billingData,
-    paymentData,
-    showSuccess,
-    router,
-    setCartProducts,
-    setCartProductsDetails,
-  ]);
+        // Set navigation state and redirect
+        setIsNavigating(true);
+        router.push(`/order-confirmation?order=${id}`);
+
+        // Clear cart after a small delay to allow navigation
+        setTimeout(() => {
+          setCartProducts([]);
+          setCartProductsDetails([]);
+        }, 100);
+      } catch (error) {
+        console.error("Order processing error:", error);
+        showError("Failed to process order. Please try again.");
+        setIsProcessing(false);
+      }
+      // Note: Don't set isProcessing to false here in success case to prevent UI flicker
+    },
+    [
+      showError,
+      user,
+      cartProductsDetails,
+      totals,
+      shippingData,
+      billingData,
+      paymentData,
+      showSuccess,
+      refreshOrders,
+      router,
+      setCartProducts,
+      setCartProductsDetails,
+    ]
+  );
 
   if (isCartProductsLoading || isNavigating) {
     return (

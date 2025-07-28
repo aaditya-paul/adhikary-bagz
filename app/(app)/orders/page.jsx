@@ -15,6 +15,75 @@ import Link from "next/link";
 import Image from "next/image";
 import { getUserOrders, getMultipleOrderDetails } from "@/lib/utils/findData";
 
+// Helper function to format Firebase timestamps or regular dates
+const formatOrderDate = (timestamp) => {
+  if (!timestamp) return "N/A";
+
+  let date;
+
+  // Handle Firebase Timestamp objects
+  if (timestamp?.toDate && typeof timestamp.toDate === "function") {
+    date = timestamp.toDate();
+  }
+  // Handle Firebase Timestamp in seconds format
+  else if (timestamp?.seconds) {
+    date = new Date(timestamp.seconds * 1000);
+  }
+  // Handle regular timestamps (numbers)
+  else if (typeof timestamp === "number") {
+    date = new Date(timestamp);
+  }
+  // Handle date strings
+  else if (typeof timestamp === "string") {
+    date = new Date(timestamp);
+  }
+  // Handle Date objects
+  else if (timestamp instanceof Date) {
+    date = timestamp;
+  } else {
+    return "Invalid Date";
+  }
+
+  // Check if date is valid
+  if (isNaN(date.getTime())) {
+    return "Invalid Date";
+  }
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
+// Helper function to get timestamp value for sorting
+const getTimestampValue = (timestamp) => {
+  if (!timestamp) return 0;
+
+  // Handle Firebase Timestamp objects
+  if (timestamp?.toDate && typeof timestamp.toDate === "function") {
+    return timestamp.toDate().getTime();
+  }
+  // Handle Firebase Timestamp in seconds format
+  else if (timestamp?.seconds) {
+    return timestamp.seconds * 1000;
+  }
+  // Handle regular timestamps (numbers)
+  else if (typeof timestamp === "number") {
+    return timestamp;
+  }
+  // Handle date strings
+  else if (typeof timestamp === "string") {
+    return new Date(timestamp).getTime();
+  }
+  // Handle Date objects
+  else if (timestamp instanceof Date) {
+    return timestamp.getTime();
+  }
+
+  return 0;
+};
+
 // Constants
 const LOADING_MESSAGES = {
   orders: "Loading your orders...",
@@ -30,7 +99,7 @@ const STATUS_CONFIG = {
 
 const OrdersPage = () => {
   const router = useRouter();
-  const { user, isLoggedin, isLoading } = useContext(UserContext);
+  const { user, isLoggedin, isLoading, cartProducts } = useContext(UserContext);
   const { notification, hideNotification, showError } = useNotification();
   const mountedRef = useRef(true);
 
@@ -74,16 +143,18 @@ const OrdersPage = () => {
 
       if (orderDetailsResult.success) {
         const sortedOrders = orderDetailsResult.orders.sort((a, b) => {
-          const dateA = new Date(a.createdAt || a.date || 0);
-          const dateB = new Date(b.createdAt || b.date || 0);
-          return dateB - dateA;
+          const dateA = getTimestampValue(a.createdAt);
+          const dateB = getTimestampValue(b.createdAt);
+          return dateB - dateA; // Most recent first
         });
         if (mountedRef.current) {
           setOrders(sortedOrders);
         }
       } else {
         if (mountedRef.current) {
-          showError(orderDetailsResult.error || "Failed to fetch order details");
+          showError(
+            orderDetailsResult.error || "Failed to fetch order details"
+          );
           setOrders([]);
         }
       }
@@ -98,7 +169,7 @@ const OrdersPage = () => {
         setIsLoadingOrders(false);
       }
     }
-  }, [isLoggedin, user?.uid, showError]);
+  }, [isLoggedin, user?.uid, cartProducts, showError]);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -107,12 +178,12 @@ const OrdersPage = () => {
     }
   }, [isLoggedin, isLoading, router]);
 
-  // Load orders when user is available
+  // Load orders when user is available or when refresh is triggered
   useEffect(() => {
     if (isLoggedin && user?.uid && mountedRef.current) {
       fetchUserOrders();
     }
-  }, [fetchUserOrders, isLoggedin, user?.uid]);
+  }, [fetchUserOrders, isLoggedin, user?.uid, cartProducts]);
 
   // Status helpers using constants
   const getStatusColor = useCallback((status) => {
@@ -243,10 +314,7 @@ const OrdersPage = () => {
                         Order #{order.orderNumber || order.id}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        Placed on{" "}
-                        {new Date(
-                          order.createdAt || order.date || Date.now()
-                        ).toLocaleDateString()}
+                        Placed on {formatOrderDate(order.createdAt)}
                       </p>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
@@ -277,8 +345,7 @@ const OrdersPage = () => {
                             <div className="w-16 h-16 rounded-lg overflow-hidden">
                               <Image
                                 src={
-                                  item.primaryImage ||
-                                  item.image ||
+                                  item.images[0] ||
                                   "/assests/bags/bag_black.png"
                                 }
                                 alt={item.name || "Product"}
