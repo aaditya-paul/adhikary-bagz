@@ -14,7 +14,7 @@ const NotificationDemo = () => {
   } = useNotification();
 
   const handleSuccess = () => {
-    showSuccess("User signed in successfully! Welcome to NÓMADA.");
+    showSuccess("User signed in successfully! Welcome to Adhikary Bagz.");
   };
 
   const handleError = () => {

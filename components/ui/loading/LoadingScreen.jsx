@@ -44,7 +44,7 @@ const LoadingScreen = ({ onLoadingComplete }) => {
             : "text-[140px] transform translate-y-0 translate-x-0"
         }`}
       >
-        NÓMADA
+        Adhikary Bagz
       </h1>
     </div>
   );

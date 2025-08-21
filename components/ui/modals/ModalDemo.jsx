@@ -120,8 +120,8 @@ const ModalDemo = () => {
       >
         <div className="space-y-4">
           <p className="text-gray-600">
-            This is a custom modal with premium styling that matches your NÓMADA
-            brand theme. It features:
+            This is a custom modal with premium styling that matches your
+            Adhikary Bagz brand theme. It features:
           </p>
           <ul className="space-y-2 text-gray-600">
             <li className="flex items-start">

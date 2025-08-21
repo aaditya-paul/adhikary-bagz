@@ -1,4 +1,4 @@
-// Products data for the NÓMADA website
+// Products data for the Adhikary Bagz website
 
 import { db } from "@/lib/firebaseConfig";
 import { collection, getDocs, query, where } from "firebase/firestore";
@@ -44,8 +44,8 @@ export const carouselImages = [
   {
     id: 5,
     src: "/assests/CarousalBag1.png",
-    alt: "NÓMADA Premium Collection - Luxury Handbags",
-    title: "Discover NÓMADA",
+    alt: "Adhikary Bagz Premium Collection - Luxury Handbags",
+    title: "Discover Adhikary Bagz",
     subtitle: "Where luxury meets wanderlust",
     link: "/shop",
     featured: true,
@@ -73,7 +73,7 @@ export const products = [
       "Hand-stitched seams for durability",
       "Adjustable shoulder strap",
       "Interior organizing pockets",
-      "Signature NÓMADA hardware",
+      "Signature Adhikary Bagz hardware",
       "Dust bag included",
     ],
     specifications: {

@@ -8,12 +8,13 @@ const LuxuryStatement = () => {
           <div>
             <h2 className="text-4xl md:text-5xl font-light mb-8 leading-tight">
               Crafted for the
-              <span className="block text-gray-400">Modern Nomad</span>
+              <span className="block text-gray-400">Modern Adhikary Bag</span>
             </h2>
             <p className="text-lg text-gray-300 leading-relaxed mb-8">
-              Each NÓMADA piece is meticulously handcrafted using the finest
-              materials sourced from around the globe. From Italian leather to
-              Japanese hardware, we believe luxury lies in the details.
+              Each Adhikary Bagz piece is meticulously handcrafted using the
+              finest materials sourced from around the globe. From Italian
+              leather to Japanese hardware, we believe luxury lies in the
+              details.
             </p>
             <div className="flex items-center space-x-8">
               <div className="text-center">

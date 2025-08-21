@@ -14,8 +14,8 @@ const Footer = () => {
           <div className="lg:col-span-1">
             <Logo className="text-3xl text-white mb-6" />
             <p className="text-gray-400 leading-relaxed mb-6">
-              Crafting timeless companions for the modern nomad's journey. Where
-              luxury meets wanderlust.
+              Crafting timeless companions for the modern Adhikary Bag's
+              journey. Where luxury meets wanderlust.
             </p>
             <div className="flex space-x-4">
               <Link
@@ -256,7 +256,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between text-sm text-gray-400">
             <div className="mb-4 md:mb-0">
-              <p>&copy; {currentYear} NÓMADA. All rights reserved.</p>
+              <p>&copy; {currentYear} Adhikary Bagz. All rights reserved.</p>
             </div>
             <div className="flex flex-wrap gap-6">
               <Link

@@ -3,8 +3,8 @@ import "../globals.css";
 import { ClientLayout, Navbar, Footer } from "@/components/layout";
 
 export const metadata = {
-  title: "NÓMADA",
-  description: "Sign in or sign up to NÓMADA luxury handbags",
+  title: "Adhikary Bagz",
+  description: "Sign in or sign up to Adhikary Bagz luxury handbags",
 };
 
 export default function AuthLayout({ children }) {

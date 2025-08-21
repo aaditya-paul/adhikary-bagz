@@ -11,7 +11,8 @@ const BrandVision = () => {
         <div className="space-y-8">
           <p className="text-2xl md:text-3xl text-gray-700 font-light leading-relaxed">
             To redefine luxury through timeless design and sustainable
-            craftsmanship, creating companions for the modern nomad's journey.
+            craftsmanship, creating companions for the modern Adhikary Bag's
+            journey.
           </p>
 
           <div className="w-32 h-0.5 bg-gray-900 mx-auto my-12"></div>

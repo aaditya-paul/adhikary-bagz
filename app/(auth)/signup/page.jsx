@@ -158,7 +158,7 @@ const SignUpPage = () => {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <h1 className="text-4xl font-light text-gray-900 tracking-wider">
-              NÓMADA
+              Adhikary Bagz
             </h1>
             <p className="text-sm text-gray-600 mt-1">Luxury Handbags</p>
           </Link>
@@ -168,7 +168,7 @@ const SignUpPage = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <FormHeader
             title="Create Account"
-            subtitle="Join the NÓMADA family"
+            subtitle="Join the Adhikary Bagz family"
           />
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -315,7 +315,7 @@ const SignUpPage = () => {
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-gray-500">
-          <p>© 2025 NÓMADA. All rights reserved.</p>
+          <p>© 2025 Adhikary Bagz. All rights reserved.</p>
         </div>
       </div>
 
