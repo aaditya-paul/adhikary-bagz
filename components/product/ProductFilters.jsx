@@ -183,11 +183,11 @@ const ProductFilters = ({
               <div className="space-y-2">
                 {[
                   { value: "all", label: "All Prices" },
-                  { value: "0-100", label: "$0 - $100" },
-                  { value: "100-200", label: "$100 - $200" },
-                  { value: "200-300", label: "$200 - $300" },
-                  { value: "300-500", label: "$300 - $500" },
-                  { value: "500", label: "$500+" },
+                  { value: "0-100", label: "₹0 - ₹100" },
+                  { value: "100-200", label: "₹100 - ₹200" },
+                  { value: "200-300", label: "₹200 - ₹300" },
+                  { value: "300-500", label: "₹300 - ₹500" },
+                  { value: "500", label: "₹500+" },
                 ].map((range) => (
                   <label key={range.value} className="flex items-center">
                     <input
