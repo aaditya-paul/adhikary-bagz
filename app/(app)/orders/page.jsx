@@ -169,7 +169,7 @@ const OrdersPage = () => {
         setIsLoadingOrders(false);
       }
     }
-  }, [isLoggedin, user?.uid, cartProducts, showError]);
+  }, [isLoggedin, user?.uid, user?.cart, showError]);
 
   // Redirect if not logged in
   useEffect(() => {

@@ -77,7 +77,7 @@ const CheckoutPage = () => {
     user,
     cartProducts,
     cartProductsDetails,
-    isCartProductsLoading,
+    isCartProductsDetailsLoading: isCartProductsLoading,
     setCartProducts,
     setCartProductsDetails,
     refreshOrders,

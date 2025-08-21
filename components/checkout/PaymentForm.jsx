@@ -15,18 +15,36 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
 
-// Stripe Element styling
+// Stripe Element styling - trying to match site font
 const elementOptions = {
   style: {
     base: {
       fontSize: "16px",
+      fontFamily: "'Bebas Neue', system-ui, -apple-system, sans-serif",
+      fontWeight: "400",
       color: "#374151",
+      lineHeight: "1.4",
+      letterSpacing: "0.5px",
+      textTransform: "uppercase",
       "::placeholder": {
-        color: "#9CA3AF",
+        color: "#6B7280",
+        fontWeight: "300",
+        textTransform: "none",
+      },
+      ":focus": {
+        color: "#111827",
       },
     },
     invalid: {
       color: "#EF4444",
+      iconColor: "#EF4444",
+      ":focus": {
+        color: "#EF4444",
+      },
+    },
+    complete: {
+      color: "#10B981",
+      iconColor: "#10B981",
     },
   },
 };
@@ -68,7 +86,7 @@ const PaymentFormContent = ({
       const timer = setTimeout(() => {
         setIsSubmitting(false);
       }, 1000); // Small delay to prevent flickering
-      
+
       return () => clearTimeout(timer);
     }
   }, [isProcessing, isSubmitting]);
@@ -136,12 +154,26 @@ const PaymentFormContent = ({
       console.error("Payment submission error:", error);
       setIsSubmitting(false);
     }
-    // Note: Don't set isSubmitting to false here in success case 
+    // Note: Don't set isSubmitting to false here in success case
     // as the parent component will handle the loading state
   };
 
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+      {/* Custom CSS for Stripe Elements */}
+      <style jsx>{`
+        .StripeElement {
+          height: 20px;
+          padding: 0;
+        }
+        .StripeElement--focus {
+          box-shadow: none;
+        }
+        .StripeElement--webkit-autofill {
+          background: white !important;
+        }
+      `}</style>
+      
       <h2 className="text-xl sm:text-2xl font-light text-gray-900 mb-6">
         Payment Information
       </h2>
@@ -157,8 +189,13 @@ const PaymentFormContent = ({
             name="cardName"
             value={data.cardName}
             onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-300 text-sm sm:text-base"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-300 text-sm sm:text-base font-babas-neue bg-white"
             placeholder="Name as it appears on card"
+            style={{ 
+              fontFamily: "'Bebas Neue', system-ui, sans-serif",
+              letterSpacing: "0.5px",
+              textTransform: "uppercase"
+            }}
             required
           />
         </div>
@@ -168,7 +205,7 @@ const PaymentFormContent = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Card Number *
           </label>
-          <div className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-gray-900 focus-within:border-transparent transition-all duration-300">
+          <div className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-gray-900 focus-within:border-transparent transition-all duration-300 bg-white">
             <CardNumberElement
               options={elementOptions}
               onChange={handleCardChange("cardNumber")}
@@ -182,7 +219,7 @@ const PaymentFormContent = ({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Expiry Date *
             </label>
-            <div className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-gray-900 focus-within:border-transparent transition-all duration-300">
+            <div className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-gray-900 focus-within:border-transparent transition-all duration-300 bg-white">
               <CardExpiryElement
                 options={elementOptions}
                 onChange={handleCardChange("cardExpiry")}
@@ -193,7 +230,7 @@ const PaymentFormContent = ({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               CVC *
             </label>
-            <div className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-gray-900 focus-within:border-transparent transition-all duration-300">
+            <div className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-gray-900 focus-within:border-transparent transition-all duration-300 bg-white">
               <CardCvcElement
                 options={elementOptions}
                 onChange={handleCardChange("cardCvc")}
@@ -270,7 +307,9 @@ const PaymentFormContent = ({
             onClick={onPrev}
             disabled={isProcessing || isSubmitting}
             className={`${
-              isProcessing || isSubmitting ? "cursor-not-allowed" : "cursor-pointer"
+              isProcessing || isSubmitting
+                ? "cursor-not-allowed"
+                : "cursor-pointer"
             } w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-300 font-medium text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             Back to Billing
@@ -278,16 +317,24 @@ const PaymentFormContent = ({
           <button
             type="submit"
             disabled={
-              isProcessing || isSubmitting || !stripe || !isCardComplete || !data.cardName
+              isProcessing ||
+              isSubmitting ||
+              !stripe ||
+              !isCardComplete ||
+              !data.cardName
             }
             className={`${
-              isProcessing || isSubmitting ? "cursor-not-allowed" : "cursor-pointer"
+              isProcessing || isSubmitting
+                ? "cursor-not-allowed"
+                : "cursor-pointer"
             } w-full sm:flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-[1.02] font-medium text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
           >
             {isProcessing || isSubmitting ? (
               <div className="flex items-center justify-center">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                {isSubmitting ? "Validating Payment..." : "Processing Payment..."}
+                {isSubmitting
+                  ? "Validating Payment..."
+                  : "Processing Payment..."}
               </div>
             ) : (
               "Place Order"
