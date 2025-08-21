@@ -173,7 +173,7 @@ const PaymentFormContent = ({
           background: white !important;
         }
       `}</style>
-      
+
       <h2 className="text-xl sm:text-2xl font-light text-gray-900 mb-6">
         Payment Information
       </h2>
@@ -191,10 +191,10 @@ const PaymentFormContent = ({
             onChange={handleChange}
             className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-300 text-sm sm:text-base font-babas-neue bg-white"
             placeholder="Name as it appears on card"
-            style={{ 
+            style={{
               fontFamily: "'Bebas Neue', system-ui, sans-serif",
               letterSpacing: "0.5px",
-              textTransform: "uppercase"
+              textTransform: "uppercase",
             }}
             required
           />

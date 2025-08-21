@@ -155,7 +155,7 @@ const ProductCard = ({
                     : "text-base text-gray-600"
                 }`}
               >
-                $
+                ₹
                 {product.price?.toFixed
                   ? product.price.toFixed(2)
                   : product.price}

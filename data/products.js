@@ -30,7 +30,7 @@ export const carouselImages = [
     title: "Japanese Minimalism",
     subtitle: "Clean lines and functional beauty",
     link: "/product/issey-miyake-tokyo",
-    featured: true,
+     
   },
   {
     id: 4,
