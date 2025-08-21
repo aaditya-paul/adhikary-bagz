@@ -326,7 +326,7 @@ const OrdersPage = () => {
                         {getStatusText(order.status || "processing")}
                       </span>
                       <span className="text-lg font-medium text-gray-900">
-                        ${(order.totalPrice || order.total || 0).toFixed(2)}
+                        ₹{(order.totalPrice || order.total || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -365,7 +365,7 @@ const OrdersPage = () => {
                             </p>
                           </div>
                           <div className="text-sm font-medium text-gray-900">
-                            $
+                            ₹
                             {((item.price || 0) * (item.quantity || 1)).toFixed(
                               2
                             )}

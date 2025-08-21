@@ -162,9 +162,9 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
         {/* Price */}
         <div className="text-right">
           <p className="text-xl font-light text-gray-900">
-            ${(item.price * item.quantity).toFixed(2)}
+            ₹{(item.price * item.quantity).toFixed(2)}
           </p>
-          <p className="text-sm text-gray-500">${item.price.toFixed(2)} each</p>
+          <p className="text-sm text-gray-500">₹{item.price.toFixed(2)} each</p>
         </div>
 
         {/* Remove Button */}
