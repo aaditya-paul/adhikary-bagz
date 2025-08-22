@@ -38,7 +38,7 @@ const LoadingScreen = ({ onLoadingComplete }) => {
       }`}
     >
       <h1
-        className={`font-babas-neue text-black transition-all duration-1000 ease-in-out ${
+        className={`font-babas-neue text-black transition-all duration-1000 ease-in-out text-center ${
           isTransitioning
             ? "text-3xl transform -translate-y-[46vh] translate-x-0"
             : "text-[140px] transform translate-y-0 translate-x-0"
