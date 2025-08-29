@@ -20,26 +20,14 @@ import {
   Divider,
 } from "@/components/auth";
 import { NotificationModal } from "@/components/ui/notifications";
+import { createNewUserData } from "@/lib/utils/storeData";
+import { getSignInErrorMessage } from "@/lib/utils/errorMessages";
 
 // Constants
 const INITIAL_FORM_DATA = {
   email: "",
   password: "",
   rememberMe: false,
-};
-
-const ERROR_MESSAGES = {
-  "auth/user-not-found":
-    "No account found with this email address. Please check your email or sign up.",
-  "auth/wrong-password":
-    "Incorrect password. Please try again or reset your password.",
-  "auth/invalid-email": "Please enter a valid email address.",
-  "auth/user-disabled":
-    "This account has been disabled. Please contact support.",
-  "auth/too-many-requests": "Too many failed attempts. Please try again later.",
-  "auth/network-request-failed":
-    "Network error. Please check your connection and try again.",
-  default: "An error occurred during sign in. Please try again.",
 };
 
 const SignInPage = () => {
@@ -63,9 +51,7 @@ const SignInPage = () => {
 
   // Helper function to get error message
   const getErrorMessage = useCallback((error) => {
-    return (
-      ERROR_MESSAGES[error.code] || error.message || ERROR_MESSAGES.default
-    );
+    return getSignInErrorMessage(error);
   }, []);
 
   // Handle email signin
@@ -97,7 +83,10 @@ const SignInPage = () => {
           showError(result.message || "Sign in failed. Please try again.");
         }
       } catch (error) {
-        showError(getErrorMessage(error), 7000);
+        console.log("Signin error caught:", error);
+        const errorMessage = getErrorMessage(error);
+        console.log("Processed error message:", errorMessage);
+        showError(errorMessage, 7000);
       } finally {
         setIsLoading(false);
       }
@@ -116,6 +105,20 @@ const SignInPage = () => {
     ]
   );
 
+  const createUserData = useCallback(
+    (user, additionalData = {}) => ({
+      firstName:
+        additionalData.firstName || user.displayName?.split(" ")[0] || "",
+      lastName:
+        additionalData.lastName ||
+        user.displayName?.split(" ").slice(1).join(" ") ||
+        "",
+      email: user.email,
+      subscribeNewsletter: additionalData.subscribeNewsletter ?? true,
+    }),
+    []
+  );
+
   // Handle Google signin
   const handleGoogleSignIn = useCallback(async () => {
     setIsLoading(true);
@@ -125,7 +128,13 @@ const SignInPage = () => {
 
       if (result.user) {
         setIsLoggedin(true);
-        const user = await fetchUser(result.user.uid);
+        let user = await fetchUser(result.user.uid);
+        if (!user) {
+          user = await createNewUserData(
+            result.user.uid,
+            createUserData(result.user)
+          );
+        }
         setUser({ ...user, emailVerified: true });
         showSuccess(result.message, 3000);
         setTimeout(() => router.push("/"), 3000);

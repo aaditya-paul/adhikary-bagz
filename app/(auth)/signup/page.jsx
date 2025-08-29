@@ -20,6 +20,7 @@ import {
   Divider,
 } from "@/components/auth";
 import { NotificationModal } from "@/components/ui/notifications";
+import { getSignUpErrorMessage } from "@/lib/utils/errorMessages";
 
 // Constants
 const INITIAL_FORM_DATA = {
@@ -30,17 +31,6 @@ const INITIAL_FORM_DATA = {
   confirmPassword: "",
   agreeToTerms: false,
   subscribeNewsletter: true,
-};
-
-const ERROR_MESSAGES = {
-  "auth/email-already-in-use":
-    "This email is already registered. Please use a different email or try signing in.",
-  "auth/weak-password":
-    "Password is too weak. Please choose a stronger password.",
-  "auth/invalid-email": "Please enter a valid email address.",
-  "auth/network-request-failed":
-    "Network error. Please check your connection and try again.",
-  default: "An error occurred during sign up. Please try again.",
 };
 
 const SignUpPage = () => {
@@ -60,9 +50,7 @@ const SignUpPage = () => {
 
   // Helper function to get error message
   const getErrorMessage = useCallback((error) => {
-    return (
-      ERROR_MESSAGES[error.code] || error.message || ERROR_MESSAGES.default
-    );
+    return getSignUpErrorMessage(error);
   }, []);
 
   // Helper function to create user data

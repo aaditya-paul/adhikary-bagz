@@ -4,21 +4,11 @@ import Link from "next/link";
 import { resetPassword } from "@/lib/utils/authentication";
 import { useNotification } from "@/hooks/useNotification";
 import { NotificationModal } from "@/components/ui/notifications";
+import { getPasswordResetErrorMessage } from "@/lib/utils/errorMessages";
 
 // Constants
 const INITIAL_FORM_DATA = {
   email: "",
-};
-
-const ERROR_MESSAGES = {
-  "auth/user-not-found":
-    "No account found with this email address. Please check your email or sign up.",
-  "auth/invalid-email": "Please enter a valid email address.",
-  "auth/too-many-requests":
-    "Too many password reset attempts. Please try again later.",
-  "auth/network-request-failed":
-    "Network error. Please check your connection and try again.",
-  default: "Failed to send reset email. Please try again.",
 };
 
 const ForgotPasswordPage = () => {
@@ -32,9 +22,7 @@ const ForgotPasswordPage = () => {
 
   // Helper function to get error message
   const getErrorMessage = useCallback((error) => {
-    return (
-      ERROR_MESSAGES[error.code] || error.message || ERROR_MESSAGES.default
-    );
+    return getPasswordResetErrorMessage(error);
   }, []);
 
   // Handle input change
