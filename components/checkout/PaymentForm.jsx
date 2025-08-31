@@ -11,9 +11,18 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-);
+// Check if Stripe publishable key is configured
+const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+if (!stripePublishableKey) {
+  console.error(
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not configured. Please add it to your .env.local file."
+  );
+}
+
+const stripePromise = stripePublishableKey
+  ? loadStripe(stripePublishableKey)
+  : null;
 
 // Stripe Element styling - trying to match site font
 const elementOptions = {

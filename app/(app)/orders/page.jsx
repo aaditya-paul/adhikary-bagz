@@ -109,7 +109,7 @@ const OrdersPage = () => {
   // Cleanup function
   useEffect(() => {
     return () => {
-      mountedRef.current = false;
+      mountedRef.current = true;
     };
   }, []);
 
@@ -140,6 +140,8 @@ const OrdersPage = () => {
 
       const orderIds = userOrdersResult.orders.map((order) => order.id);
       const orderDetailsResult = await getMultipleOrderDetails(orderIds);
+
+      console.log("orderDetailsResult:", orderDetailsResult);
 
       if (orderDetailsResult.success) {
         const sortedOrders = orderDetailsResult.orders.sort((a, b) => {
@@ -183,7 +185,7 @@ const OrdersPage = () => {
     if (isLoggedin && user?.uid && mountedRef.current) {
       fetchUserOrders();
     }
-  }, [fetchUserOrders, isLoggedin, user?.uid, cartProducts]);
+    }, [fetchUserOrders, isLoggedin, user?.uid, cartProducts]);
 
   // Status helpers using constants
   const getStatusColor = useCallback((status) => {
@@ -268,7 +270,7 @@ const OrdersPage = () => {
         </div>
 
         {/* Orders List */}
-        {!hasOrders ? (
+        {orders.length === 0 ? (
           <div className="bg-white rounded-xl shadow-lg p-8 text-center">
             <div className="mb-6">
               <svg
