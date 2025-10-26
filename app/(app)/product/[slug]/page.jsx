@@ -46,6 +46,14 @@ const ProductPage = ({ params }) => {
   const resolvedParams = use(params);
   //changing here
 
+  // Ensure the page is scrolled to top when this client component mounts.
+  // This prevents cases where navigation lands the user at the bottom of the page.
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
+  }, []);
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -108,7 +116,8 @@ const ProductPage = ({ params }) => {
         product.slug,
         quantity,
         selectedSize,
-        user
+        user?.uid,
+        user?.cart
       );
 
       if (result.success) {
@@ -116,11 +125,9 @@ const ProductPage = ({ params }) => {
         // await refreshCart();
         if (result.updationType === "quantity") {
           setCartProducts(result.cart);
-          showSuccess("Product quantity updated in cart");
         } else {
           setCartProducts((prev) => [...prev, result.cartItem]);
           // Optionally refresh cart products details if needed
-          showSuccess("Product added to cart");
         }
         showSuccess(result.message);
       } else {
@@ -134,10 +141,10 @@ const ProductPage = ({ params }) => {
     }
   };
 
-  const handleBuyNow = () => {
-    // Buy now functionality
-    console.log(`Buy now: ${quantity} ${product.name}`);
-  };
+  // const handleBuyNow = () => {
+  //   // Buy now functionality
+  //   console.log(`Buy now: ${quantity} ${product.name}`);
+  // };
 
   if (isProductLoading) {
     return (
@@ -178,7 +185,7 @@ const ProductPage = ({ params }) => {
               quantity={quantity}
               setQuantity={setQuantity}
               handleAddToCart={handleAddToCart}
-              handleBuyNow={handleBuyNow}
+              // handleBuyNow={handleBuyNow}
               isAddingToCart={isAddingToCart}
             />
           </div>

@@ -10,7 +10,7 @@ const ProductActions = ({
   setQuantity,
   handleAddToCart,
   handleBuyNow,
-  isAddingToCart
+  isAddingToCart,
 }) => {
   return (
     <div className="space-y-6">
@@ -81,13 +81,13 @@ const ProductActions = ({
         >
           {isAddingToCart ? "Adding..." : "Add to Cart"}
         </button>
-        <button
+        {/* <button
           onClick={handleBuyNow}
           disabled={!product.inStock}
           className="w-full border border-gray-900 cursor-pointer text-gray-900 py-3 px-6 rounded-md hover:bg-gray-900 hover:text-white transition-colors duration-300 disabled:border-gray-400 disabled:text-gray-400"
         >
           Buy Now
-        </button>
+        </button> */}
       </div>
     </div>
   );
